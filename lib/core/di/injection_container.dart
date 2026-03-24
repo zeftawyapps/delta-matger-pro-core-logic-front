@@ -19,6 +19,14 @@ import 'package:matger_core_logic/features/commrec/repo/product_repo.dart';
 import 'package:matger_core_logic/features/commrec/source/product_source.dart';
 import 'package:matger_core_logic/repo_bloc/test_bloc.dart';
 
+// Roles Imports
+import 'package:matger_core_logic/features/roles/source/role_source.dart';
+import 'package:matger_core_logic/features/roles/repo/role_repo.dart';
+
+// Users Imports
+import 'package:matger_core_logic/features/users/source/user_source.dart';
+import 'package:matger_core_logic/features/users/repo/user_repo.dart';
+
 final GetIt sl = GetIt.instance; // sl stands for Service Locator
 
 Future<void> initCoreLocator() async {
@@ -57,6 +65,15 @@ Future<void> initCoreLocator() async {
   );
   sl.registerLazySingleton<OrderRepo>(() => OrderRepo(orderSource: sl()));
   sl.registerLazySingleton<ProductRepo>(() => ProductRepo(productSource: sl()));
+
+  // Roles & Users Sources
+  sl.registerLazySingleton<RoleSource>(() => RoleSource());
+  sl.registerLazySingleton<UserSource>(() => UserSource());
+
+  // Roles & Users Repos
+  sl.registerLazySingleton<RoleRepo>(() => RoleRepo(roleSource: sl()));
+  sl.registerLazySingleton<UserRepo>(() => UserRepo(userSource: sl()));
+
   // ==========================================
   // 3. Blocs (Feature Management)
   // ==========================================

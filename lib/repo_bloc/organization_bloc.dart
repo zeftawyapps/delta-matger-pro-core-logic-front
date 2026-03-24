@@ -14,6 +14,9 @@ class OrganizationBloc {
   final DataSourceBloc<OrganizationData> createOrgBloc =
       DataSourceBloc<OrganizationData>();
 
+  final DataSourceBloc<List<OrganizationData>> activeOrganizationsBloc =
+      DataSourceBloc<List<OrganizationData>>();
+
   final DataSourceBloc<Map<String, dynamic>> rawDataBloc =
       DataSourceBloc<Map<String, dynamic>>();
 
@@ -54,4 +57,21 @@ class OrganizationBloc {
       );
     }
   }
+
+  void loadActiveOrganizations() async {
+    activeOrganizationsBloc.loadingState();
+    final result = await _repo.getActiveOrganizations();
+
+    if (result.status == StatusModel.success && result.data != null) {
+      activeOrganizationsBloc.successState(result.data!);
+    } else {
+      activeOrganizationsBloc.failedState(
+        ErrorStateModel(
+          message: result.message ?? "Failed to load organizations",
+        ),
+        () => loadActiveOrganizations(),
+      );
+    }
+  }
 }
+

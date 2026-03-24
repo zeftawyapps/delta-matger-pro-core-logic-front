@@ -16,7 +16,11 @@ class projectConfig {
 }
 
 class ProjectAPIHeader {
-  static void setHeader(String? token) {
+  static void setToken(String? token) {
     HttpHeader().setAuthHeader(token ?? "", Bearer: "Bearer ");
+  }
+
+  static void setLanguage(String lang) {
+    HttpHeader().setLangHeader(lang: lang);
   }
 }

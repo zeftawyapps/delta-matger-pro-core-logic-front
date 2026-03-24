@@ -27,14 +27,14 @@ class OrganizationData {
 
   factory OrganizationData.fromJson(Map<String, dynamic> json) {
     return OrganizationData(
-      organizationId: json['organizationId'] as String? ?? '',
-      name: json['name'] as String? ?? '',
+      organizationId: (json['organizationId'] ?? json['_id']) as String? ?? '',
+      name: (json['name'] ?? json['orgName']) as String? ?? '',
       ownerId: json['ownerId'] as String? ?? '',
       address: json['address'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       email: json['email'] as String? ?? '',
-      location: json['location'] != null
-          ? LocationData.fromJson(json['location'] as Map<String, dynamic>)
+      location: json['location'] != null && json['location'] is Map
+          ? LocationData.fromJson(Map<String, dynamic>.from(json['location']))
           : null,
       isActive: json['isActive'] as bool? ?? true,
       isDataComplete: json['isDataComplete'] as bool? ?? false,

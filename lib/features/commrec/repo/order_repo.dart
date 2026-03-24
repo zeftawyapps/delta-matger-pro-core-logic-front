@@ -2,6 +2,7 @@ import 'package:matger_core_logic/features/commrec/data/order_model.dart';
 import 'package:matger_core_logic/features/commrec/source/order_source.dart';
 import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
+import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
 
 class OrderRepo {
   late final OrderSource _orderSource;
@@ -17,6 +18,8 @@ class OrderRepo {
     required List<OrderItemData> items,
     Map<String, dynamic>? additionalData,
   }) async {
+    JDRepoConsole.info("Creating order in repo for organization: $organizationId",
+        context: LogContext(module: "OrderRepo", method: "createOrder"));
     final result = await _orderSource.createOrder(
       organizationId: organizationId,
       customerId: customerId,
@@ -26,6 +29,8 @@ class OrderRepo {
     );
 
     if (result.error != null) {
+      JDRepoConsole.error("Source error in createOrder: ${result.error?.message}",
+          context: LogContext(module: "OrderRepo", method: "createOrder"));
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
@@ -33,11 +38,16 @@ class OrderRepo {
     }
 
     try {
+      final order = OrderData.fromJson(result.data as Map<String, dynamic>);
+      JDRepoConsole.success("Order parsed successfully in repo",
+          context: LogContext(module: "OrderRepo", method: "createOrder"));
       return RemoteBaseModel(
-        data: OrderData.fromJson(result.data as Map<String, dynamic>),
+        data: order,
         status: StatusModel.success,
       );
     } catch (e) {
+      JDRepoConsole.error("Parsing error in createOrder: $e",
+          context: LogContext(module: "OrderRepo", method: "createOrder", metadata: result.data));
       return RemoteBaseModel(
         status: StatusModel.error,
         message: "Parsing Error: $e",
@@ -46,9 +56,13 @@ class OrderRepo {
   }
 
   Future<RemoteBaseModel<List<OrderData>>> getShopOrders(String shopId) async {
+    JDRepoConsole.info("Getting shop orders in repo: $shopId",
+        context: LogContext(module: "OrderRepo", method: "getShopOrders"));
     final result = await _orderSource.getShopOrders(shopId);
 
     if (result.error != null) {
+      JDRepoConsole.error("Source error in getShopOrders: ${result.error?.message}",
+          context: LogContext(module: "OrderRepo", method: "getShopOrders"));
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
@@ -56,14 +70,28 @@ class OrderRepo {
     }
 
     try {
-      final List data = result.data is List
-          ? result.data
-          : (result.data['data'] ?? []);
-      final orders = data
+      final data = result.data;
+      final List ordersList;
+
+      if (data is List) {
+        ordersList = data;
+      } else if (data is Map && data['data'] is List) {
+        ordersList = data['data'];
+      } else if (data is Map && data['orders'] is List) {
+        ordersList = data['orders'];
+      } else {
+        ordersList = [];
+      }
+
+      final orders = ordersList
           .map((e) => OrderData.fromJson(e as Map<String, dynamic>))
           .toList();
+      JDRepoConsole.success("Fetched ${orders.length} orders successfully in repo",
+          context: LogContext(module: "OrderRepo", method: "getShopOrders"));
       return RemoteBaseModel(data: orders, status: StatusModel.success);
     } catch (e) {
+      JDRepoConsole.error("Parsing error in getShopOrders: $e",
+          context: LogContext(module: "OrderRepo", method: "getShopOrders", metadata: result.data));
       return RemoteBaseModel(
         status: StatusModel.error,
         message: "Parsing Error: $e",
@@ -72,9 +100,13 @@ class OrderRepo {
   }
 
   Future<RemoteBaseModel<OrderData>> getOrderById(String orderId) async {
+    JDRepoConsole.info("Getting order by ID in repo: $orderId",
+        context: LogContext(module: "OrderRepo", method: "getOrderById"));
     final result = await _orderSource.getOrderById(orderId);
 
     if (result.error != null) {
+      JDRepoConsole.error("Source error in getOrderById: ${result.error?.message}",
+          context: LogContext(module: "OrderRepo", method: "getOrderById"));
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
@@ -82,11 +114,16 @@ class OrderRepo {
     }
 
     try {
+      final order = OrderData.fromJson(result.data as Map<String, dynamic>);
+      JDRepoConsole.success("Order fetched and parsed successfully in repo",
+          context: LogContext(module: "OrderRepo", method: "getOrderById"));
       return RemoteBaseModel(
-        data: OrderData.fromJson(result.data as Map<String, dynamic>),
+        data: order,
         status: StatusModel.success,
       );
     } catch (e) {
+      JDRepoConsole.error("Parsing error in getOrderById: $e",
+          context: LogContext(module: "OrderRepo", method: "getOrderById", metadata: result.data));
       return RemoteBaseModel(
         status: StatusModel.error,
         message: "Parsing Error: $e",
@@ -98,9 +135,13 @@ class OrderRepo {
     String orderId,
     String status,
   ) async {
+    JDRepoConsole.info("Updating order status in repo: $orderId to $status",
+        context: LogContext(module: "OrderRepo", method: "updateOrderStatus"));
     final result = await _orderSource.updateOrderStatus(orderId, status);
 
     if (result.error != null) {
+      JDRepoConsole.error("Source error in updateOrderStatus: ${result.error?.message}",
+          context: LogContext(module: "OrderRepo", method: "updateOrderStatus"));
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
@@ -108,6 +149,8 @@ class OrderRepo {
       );
     }
 
+    JDRepoConsole.success("Order status updated successfully in repo",
+        context: LogContext(module: "OrderRepo", method: "updateOrderStatus"));
     return RemoteBaseModel(data: true, status: StatusModel.success);
   }
 }
