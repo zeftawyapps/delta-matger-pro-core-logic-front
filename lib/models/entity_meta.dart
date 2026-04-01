@@ -1,4 +1,5 @@
 import 'package:JoDija_reposatory/utilis/models/base_data_model.dart';
+import 'package:matger_core_logic/utls/type_parser.dart';
 
 class UserMeta {
   final String userId;
@@ -46,7 +47,7 @@ class EntityMeta extends BaseEntityDataModel {
       updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'].toString()) ?? DateTime.now()
           : DateTime.now(),
-      isActive: json['isActive'] as bool? ?? true,
+      isActive: TypeParser.parseBool(json['isActive'], true),
       deletedAt: json['deletedAt'] != null
           ? DateTime.tryParse(json['deletedAt'].toString())
           : null,

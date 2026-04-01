@@ -2,45 +2,80 @@ import 'package:matger_core_logic/models/entity_meta.dart';
 
 enum PermissionType {
   read,
-  write,
-  delete,
+  add,
   update,
-  admin,
+  delete,
   manage,
-  stream;
+  stream,
+  admin,
+  workflowAction,
+  view,
+  all; // Represents '*'
 
   static PermissionType fromString(String value) {
+    if (value == '*') return PermissionType.all;
     return PermissionType.values.firstWhere(
-      (e) => e.name == value.toLowerCase(),
+      (e) => e.name == value,
       orElse: () => PermissionType.read,
     );
+  }
+
+  String toRawString() {
+    if (this == PermissionType.all) return '*';
+    return name;
   }
 }
 
 enum ResourceType {
+  controlPanel,
+  superAdmin,
+  commerce,
   user,
   role,
   permission,
-  book,
+  system,
+  dashboard,
+  reports,
+  users,
+  settings,
+  orders,
+  products,
   product,
   category,
-  system,
   order,
-  all;
+  organization,
+  offer,
+  orgnizationownerData,
+  all; // Represents '*'
 
   static ResourceType fromString(String value) {
     if (value == '*') return ResourceType.all;
+    
+    // Handle screen. prefix
+    String cleanValue = value;
+    if (value.startsWith('screen.')) {
+      cleanValue = value.replaceFirst('screen.', '');
+    }
+
     return ResourceType.values.firstWhere(
-      (e) => e.name == value.toLowerCase(),
+      (e) => e.name == cleanValue,
       orElse: () => ResourceType.all,
     );
   }
 
   String toRawString() {
     if (this == ResourceType.all) return '*';
+    
+    // Check if it's a screen resource
+    const screens = ['dashboard', 'reports', 'users', 'settings', 'orders', 'products'];
+    if (screens.contains(name)) {
+      return 'screen.$name';
+    }
+    
     return name;
   }
 }
+
 
 class PermissionModel {
   final String id;

@@ -220,10 +220,29 @@ class RoleSource {
     if (result.data?.status == StatusModel.success) {
       return Result.data(result.data?.data);
     }
+
+    String? message = result.error?.message ?? result.data?.message;
+
+    if (result.data?.data is Map) {
+      final dataMap = result.data?.data as Map;
+      final msg = dataMap['message'] ??
+          dataMap['error'] ??
+          dataMap['errors'] ??
+          dataMap['detail'];
+      if (msg != null) {
+        if (msg is List) {
+          message = msg.join(', ');
+        } else {
+          message = msg.toString();
+        }
+      }
+    }
+
     return Result.error(
       RemoteBaseModel(
-        message: result.error?.message ?? result.data?.message,
+        message: message ?? 'خطأ غير معروف',
         status: result.data?.status ?? StatusModel.error,
+        data: result.data?.data ?? result.error?.data,
       ),
     );
   }
@@ -233,8 +252,39 @@ class RoleSource {
       'Error in $method: $e',
       context: LogContext(module: 'RoleSource', method: method),
     );
+
+    String message = "حدث خطأ غير متوقع";
+    dynamic errorData;
+
+    if (e is DioException) {
+      errorData = e.response?.data;
+      if (errorData is Map) {
+        final msg = errorData['message'] ??
+            errorData['error'] ??
+            errorData['errors'] ??
+            errorData['detail'];
+        if (msg != null) {
+          if (msg is List) {
+            message = msg.join(', ');
+          } else {
+            message = msg.toString();
+          }
+        } else {
+          message = e.message ?? "خطأ في الاتصال بالسيرفر";
+        }
+      } else {
+        message = e.message ?? "خطأ في الاتصال بالسيرفر";
+      }
+    } else {
+      message = e.toString();
+    }
+
     return Result.error(
-      RemoteBaseModel(message: e.toString(), status: StatusModel.error),
+      RemoteBaseModel(
+        message: message,
+        status: StatusModel.error,
+        data: errorData,
+      ),
     );
   }
 }

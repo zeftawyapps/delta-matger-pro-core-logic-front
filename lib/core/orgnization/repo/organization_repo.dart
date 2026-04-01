@@ -163,7 +163,11 @@ class OrganizationRepo {
     }
 
     try {
-      final updatedConfig = OrganizationConfig.fromJson(result.data);
+      final configData = result.data is Map && result.data['data'] != null
+          ? result.data['data'] as Map<String, dynamic>
+          : result.data as Map<String, dynamic>;
+      
+      final updatedConfig = OrganizationConfig.fromJson(configData);
       JDRepoConsole.success("Organization config parsed successfully",
           context: LogContext(module: "OrganizationRepo", method: "updateOrganizationConfig"));
       return RemoteBaseModel(
@@ -203,7 +207,11 @@ class OrganizationRepo {
     }
 
     try {
-      final updatedConfig = OrganizationConfig.fromJson(result.data);
+      final configData = result.data is Map && result.data['data'] != null
+          ? result.data['data'] as Map<String, dynamic>
+          : result.data as Map<String, dynamic>;
+
+      final updatedConfig = OrganizationConfig.fromJson(configData);
       JDRepoConsole.success("Organization config section parsed successfully",
           context: LogContext(module: "OrganizationRepo", method: "updateOrganizationConfigSection"));
       return RemoteBaseModel(
@@ -525,7 +533,11 @@ class OrganizationRepo {
     }
 
     try {
-      final updatedPolicy = OrganizationPolicy.fromJson(result.data);
+      final policyData = result.data is Map && result.data['data'] != null
+          ? result.data['data'] as Map<String, dynamic>
+          : result.data as Map<String, dynamic>;
+
+      final updatedPolicy = OrganizationPolicy.fromJson(policyData);
       JDRepoConsole.success("Organization policy parsed successfully",
           context: LogContext(module: "OrganizationRepo", method: "updateOrganizationPolicy"));
       return RemoteBaseModel(
@@ -565,7 +577,11 @@ class OrganizationRepo {
     }
 
     try {
-      final updatedPolicy = OrganizationPolicy.fromJson(result.data);
+      final policyData = result.data is Map && result.data['data'] != null
+          ? result.data['data'] as Map<String, dynamic>
+          : result.data as Map<String, dynamic>;
+
+      final updatedPolicy = OrganizationPolicy.fromJson(policyData);
       JDRepoConsole.success("Organization policy section parsed successfully",
           context: LogContext(module: "OrganizationRepo", method: "updateOrganizationPolicySection"));
       return RemoteBaseModel(

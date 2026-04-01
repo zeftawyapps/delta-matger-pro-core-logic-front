@@ -22,6 +22,7 @@ import 'package:matger_core_logic/repo_bloc/test_bloc.dart';
 // Roles Imports
 import 'package:matger_core_logic/features/roles/source/role_source.dart';
 import 'package:matger_core_logic/features/roles/repo/role_repo.dart';
+import 'package:matger_core_logic/repo_bloc/role_bloc.dart';
 
 // Users Imports
 import 'package:matger_core_logic/features/users/source/user_source.dart';
@@ -78,4 +79,5 @@ Future<void> initCoreLocator() async {
   // 3. Blocs (Feature Management)
   // ==========================================
   sl.registerFactory(() => TestBloc(testRepo: sl()));
+  sl.registerFactory(() => RoleBloc(roleRepo: sl()));
 }

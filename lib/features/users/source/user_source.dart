@@ -134,6 +134,61 @@ class UserSource {
     }
   }
 
+  // ─── Search ─────────────────────────────────────────────────────────────────
+
+  /// البحث العام عن المستخدمين.
+  /// term: نص البحث (يتم البحث في username و email).
+  Future<Result<RemoteBaseModel, dynamic>> searchProfiles({
+    String? term,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        'Searching profiles with term: $term',
+        context: LogContext(module: 'UserSource', method: 'searchProfiles'),
+      );
+      final url = '${ApiUrls.BASE_URL}${EndPoints.searchProfiles}';
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        queryParameters: {
+          if (term != null && term.isNotEmpty) 'term': term,
+        },
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError('searchProfiles', e);
+    }
+  }
+
+  /// البحث داخل منظمة محددة.
+  /// organizationId: معرف المنظمة.
+  /// term: نص البحث.
+  Future<Result<RemoteBaseModel, dynamic>> searchProfilesInOrg({
+    required String organizationId,
+    String? term,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        'Searching profiles in organization $organizationId with term: $term',
+        context: LogContext(module: 'UserSource', method: 'searchProfilesInOrg'),
+      );
+      final url =
+          '${ApiUrls.BASE_URL}${EndPoints.searchProfilesInOrg(organizationId)}';
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        queryParameters: {
+          if (term != null && term.isNotEmpty) 'term': term,
+        },
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError('searchProfilesInOrg', e);
+    }
+  }
+
   // ─── Update ───────────────────────────────────────────────────────────────
 
   /// تحديث بيانات مستخدم معين (كـ Admin).
@@ -306,10 +361,29 @@ class UserSource {
     if (result.data?.status == StatusModel.success) {
       return Result.data(result.data?.data);
     }
+
+    String? message = result.error?.message ?? result.data?.message;
+
+    if (result.data?.data is Map) {
+      final dataMap = result.data?.data as Map;
+      final msg = dataMap['message'] ??
+          dataMap['error'] ??
+          dataMap['errors'] ??
+          dataMap['detail'];
+      if (msg != null) {
+        if (msg is List) {
+          message = msg.join(', ');
+        } else {
+          message = msg.toString();
+        }
+      }
+    }
+
     return Result.error(
       RemoteBaseModel(
-        message: result.error?.message ?? result.data?.message,
+        message: message ?? 'خطأ غير معروف',
         status: result.data?.status ?? StatusModel.error,
+        data: result.data?.data ?? result.error?.data,
       ),
     );
   }
@@ -319,8 +393,39 @@ class UserSource {
       'Error in $method: $e',
       context: LogContext(module: 'UserSource', method: method),
     );
+
+    String message = "حدث خطأ غير متوقع";
+    dynamic errorData;
+
+    if (e is DioException) {
+      errorData = e.response?.data;
+      if (errorData is Map) {
+        final msg = errorData['message'] ??
+            errorData['error'] ??
+            errorData['errors'] ??
+            errorData['detail'];
+        if (msg != null) {
+          if (msg is List) {
+            message = msg.join(', ');
+          } else {
+            message = msg.toString();
+          }
+        } else {
+          message = e.message ?? "خطأ في الاتصال بالسيرفر";
+        }
+      } else {
+        message = e.message ?? "خطأ في الاتصال بالسيرفر";
+      }
+    } else {
+      message = e.toString();
+    }
+
     return Result.error(
-      RemoteBaseModel(message: e.toString(), status: StatusModel.error),
+      RemoteBaseModel(
+        message: message,
+        status: StatusModel.error,
+        data: errorData,
+      ),
     );
   }
 }

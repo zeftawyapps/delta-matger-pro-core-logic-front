@@ -36,24 +36,9 @@ class OrderSource {
         body: body,
         cancelToken: CancelToken(),
       );
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Order created successfully",
-            context: LogContext(module: "OrderSource", method: "createOrder"));
-      } else {
-        JDRepoConsole.error("Order creation failed",
-            context: LogContext(
-                module: "OrderSource",
-                method: "createOrder",
-                metadata: handledResult.error));
-      }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error creating order: $e",
-          context: LogContext(module: "OrderSource", method: "createOrder"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("createOrder", e);
     }
   }
 
@@ -67,24 +52,9 @@ class OrderSource {
         url: url,
         cancelToken: CancelToken(),
       );
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Shop orders fetched successfully",
-            context: LogContext(module: "OrderSource", method: "getShopOrders"));
-      } else {
-        JDRepoConsole.error("Failed to fetch shop orders",
-            context: LogContext(
-                module: "OrderSource",
-                method: "getShopOrders",
-                metadata: handledResult.error));
-      }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error fetching shop orders: $e",
-          context: LogContext(module: "OrderSource", method: "getShopOrders"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getShopOrders", e);
     }
   }
 
@@ -98,24 +68,9 @@ class OrderSource {
         url: url,
         cancelToken: CancelToken(),
       );
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Order fetched successfully",
-            context: LogContext(module: "OrderSource", method: "getOrderById"));
-      } else {
-        JDRepoConsole.error("Failed to fetch order",
-            context: LogContext(
-                module: "OrderSource",
-                method: "getOrderById",
-                metadata: handledResult.error));
-      }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error fetching order: $e",
-          context: LogContext(module: "OrderSource", method: "getOrderById"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getOrderById", e);
     }
   }
 
@@ -133,37 +88,82 @@ class OrderSource {
         body: {"status": status},
         cancelToken: CancelToken(),
       );
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Order status updated successfully",
-            context: LogContext(module: "OrderSource", method: "updateOrderStatus"));
-      } else {
-        JDRepoConsole.error("Failed to update order status",
-            context: LogContext(
-                module: "OrderSource",
-                method: "updateOrderStatus",
-                metadata: handledResult.error));
-      }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error updating order status: $e",
-          context: LogContext(module: "OrderSource", method: "updateOrderStatus"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("updateOrderStatus", e);
     }
   }
 
-  Result<RemoteBaseModel, dynamic> _handleResult(
+  Result<RemoteBaseModel, dynamic> _wrap(
     Result<RemoteBaseModel, RemoteBaseModel> result,
   ) {
     if (result.data?.status == StatusModel.success) {
       return Result.data(result.data?.data);
     }
+
+    String? message = result.error?.message ?? result.data?.message;
+
+    if (result.data?.data is Map) {
+      final dataMap = result.data?.data as Map;
+      final msg = dataMap['message'] ??
+          dataMap['error'] ??
+          dataMap['errors'] ??
+          dataMap['detail'];
+      if (msg != null) {
+        if (msg is List) {
+          message = msg.join(', ');
+        } else {
+          message = msg.toString();
+        }
+      }
+    }
+
     return Result.error(
       RemoteBaseModel(
-        message: result.error?.message ?? result.data?.message,
+        message: message ?? 'خطأ غير معروف',
         status: result.data?.status ?? StatusModel.error,
+        data: result.data?.data ?? result.error?.data,
+      ),
+    );
+  }
+
+  Result<RemoteBaseModel, dynamic> _catchError(String method, Object e) {
+    JDRepoConsole.error(
+      "Error in $method: $e",
+      context: LogContext(module: "OrderSource", method: method),
+    );
+
+    String message = "حدث خطأ غير متوقع";
+    dynamic errorData;
+
+    if (e is DioException) {
+      errorData = e.response?.data;
+      if (errorData is Map) {
+        final msg = errorData['message'] ??
+            errorData['error'] ??
+            errorData['errors'] ??
+            errorData['detail'];
+        if (msg != null) {
+          if (msg is List) {
+            message = msg.join(', ');
+          } else {
+            message = msg.toString();
+          }
+        } else {
+          message = e.message ?? "خطأ في الاتصال بالسيرفر";
+        }
+      } else {
+        message = e.message ?? "خطأ في الاتصال بالسيرفر";
+      }
+    } else {
+      message = e.toString();
+    }
+
+    return Result.error(
+      RemoteBaseModel(
+        message: message,
+        status: StatusModel.error,
+        data: errorData,
       ),
     );
   }

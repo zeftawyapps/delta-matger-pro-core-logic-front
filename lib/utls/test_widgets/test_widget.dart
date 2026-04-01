@@ -1043,6 +1043,7 @@ class _LogicDashboardState extends State<LogicDashboard> {
     final categoryIdController = TextEditingController(text: "cat_123");
     final shopIdController = TextEditingController(text: "shop_123");
     final priceController = TextEditingController(text: "99.99");
+    ImageFileModel? selectedImage;
 
     showDialog(
       context: context,
@@ -1069,6 +1070,26 @@ class _LogicDashboardState extends State<LogicDashboard> {
                 decoration: const InputDecoration(labelText: "Price"),
                 keyboardType: TextInputType.number,
               ),
+              const SizedBox(height: 16),
+              const Text(
+                "Product Image",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              ImagePecker(
+                placeholderAsset: "assets/placeholder.png",
+                height: 150,
+                width: 150,
+                backgroundColor: TestColors.surface,
+                iconColor: TestColors.primary,
+                enableCrop: false,
+                onImageSelected: (imageModel) {
+                  selectedImage = imageModel;
+                  _addLog(
+                    "Image selected for product: ${imageModel.readableFileSize}",
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -1084,6 +1105,8 @@ class _LogicDashboardState extends State<LogicDashboard> {
                 categoryId: categoryIdController.text,
                 shopId: shopIdController.text,
                 price: double.tryParse(priceController.text) ?? 0.0,
+                imageBytes: selectedImage?.bytes,
+                imageName: selectedImage?.xFile?.name,
               );
               Navigator.pop(c);
               _addLog("Creating Product: ${nameController.text}");

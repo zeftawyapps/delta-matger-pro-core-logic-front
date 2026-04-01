@@ -30,41 +30,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization created successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "createOrganizationWithOwner",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Organization creation failed",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "createOrganizationWithOwner",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error creating organization: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "createOrganizationWithOwner",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("createOrganizationWithOwner", e);
     }
   }
 
@@ -85,41 +53,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Active organizations retrieved successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "getActiveOrganizations",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to get active organizations",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getActiveOrganizations",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error getting active organizations: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getActiveOrganizations",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getActiveOrganizations", e);
     }
   }
 
@@ -143,41 +79,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization config retrieved successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "getOrganizationConfig",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to get organization config",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationConfig",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error getting organization config: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationConfig",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getOrganizationConfig", e);
     }
   }
 
@@ -202,41 +106,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization config section retrieved successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "getOrganizationConfigSection",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to get organization config section",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationConfigSection",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error getting organization config section: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationConfigSection",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getOrganizationConfigSection", e);
     }
   }
 
@@ -262,41 +134,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization config updated successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "updateOrganizationConfig",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to update organization config",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationConfig",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error updating organization config: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationConfig",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("updateOrganizationConfig", e);
     }
   }
 
@@ -323,41 +163,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization config section updated successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "updateOrganizationConfigSection",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to update organization config section",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationConfigSection",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error updating organization config section: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationConfigSection",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("updateOrganizationConfigSection", e);
     }
   }
 
@@ -381,41 +189,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization policy retrieved successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "getOrganizationPolicy",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to get organization policy",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationPolicy",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error getting organization policy: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationPolicy",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getOrganizationPolicy", e);
     }
   }
 
@@ -441,41 +217,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization policy updated successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "updateOrganizationPolicy",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to update organization policy",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationPolicy",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error updating organization policy: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationPolicy",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("updateOrganizationPolicy", e);
     }
   }
 
@@ -502,41 +246,9 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization policy section updated successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "updateOrganizationPolicySection",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to update organization policy section",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationPolicySection",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error updating organization policy section: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "updateOrganizationPolicySection",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("updateOrganizationPolicySection", e);
     }
   }
 
@@ -560,41 +272,83 @@ class OrganizationSource {
         cancelToken: CancelToken(),
       );
 
-      if (result.data?.status == StatusModel.success) {
-        JDRepoConsole.success(
-          "Organization config by name retrieved successfully",
-          context: LogContext(
-            module: "OrganizationSource",
-            method: "getOrganizationConfigByName",
-          ),
-        );
-        return Result.data(result.data?.data);
-      }
-      JDRepoConsole.error(
-        "Failed to get organization config by name",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationConfigByName",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message ?? result.data?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Error getting organization config by name: $e",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "getOrganizationConfigByName",
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getOrganizationConfigByName", e);
     }
+  }
+
+  Result<RemoteBaseModel, dynamic> _wrap(
+    Result<RemoteBaseModel, RemoteBaseModel> result,
+  ) {
+    if (result.data?.status == StatusModel.success) {
+      return Result.data(result.data?.data);
+    }
+
+    String? message = result.error?.message ?? result.data?.message;
+
+    if (result.data?.data is Map) {
+      final dataMap = result.data?.data as Map;
+      final msg = dataMap['message'] ??
+          dataMap['error'] ??
+          dataMap['errors'] ??
+          dataMap['detail'];
+      if (msg != null) {
+        if (msg is List) {
+          message = msg.join(', ');
+        } else {
+          message = msg.toString();
+        }
+      }
+    }
+
+    return Result.error(
+      RemoteBaseModel(
+        message: message ?? 'خطأ غير معروف',
+        status: result.data?.status ?? StatusModel.error,
+        data: result.data?.data ?? result.error?.data,
+      ),
+    );
+  }
+
+  Result<RemoteBaseModel, dynamic> _catchError(String method, Object e) {
+    JDRepoConsole.error(
+      "Error in $method: $e",
+      context: LogContext(module: "OrganizationSource", method: method),
+    );
+
+    String message = "حدث خطأ غير متوقع";
+    dynamic errorData;
+
+    if (e is DioException) {
+      errorData = e.response?.data;
+      if (errorData is Map) {
+        final msg = errorData['message'] ??
+            errorData['error'] ??
+            errorData['errors'] ??
+            errorData['detail'];
+        if (msg != null) {
+          if (msg is List) {
+            message = msg.join(', ');
+          } else {
+            message = msg.toString();
+          }
+        } else {
+          message = e.message ?? "خطأ في الاتصال بالسيرفر";
+        }
+      } else {
+        message = e.message ?? "خطأ في الاتصال بالسيرفر";
+      }
+    } else {
+      message = e.toString();
+    }
+
+    return Result.error(
+      RemoteBaseModel(
+        message: message,
+        status: StatusModel.error,
+        data: errorData,
+      ),
+    );
   }
 }

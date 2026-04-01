@@ -21,8 +21,10 @@ class CategorySource {
     bool trigger = true,
   }) async {
     try {
-      JDRepoConsole.info("Creating category: $name",
-          context: LogContext(module: "CategorySource", method: "createCategory"));
+      JDRepoConsole.info(
+        "Creating category: $name",
+        context: LogContext(module: "CategorySource", method: "createCategory"),
+      );
       String url =
           "${ApiUrls.BASE_URL}${EndPoints.categories}?trigger=$trigger";
 
@@ -54,55 +56,51 @@ class CategorySource {
           cancelToken: CancelToken(),
         );
       }
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Category created successfully",
-            context: LogContext(module: "CategorySource", method: "createCategory"));
-      } else {
-        JDRepoConsole.error("Category creation failed",
-            context: LogContext(
-                module: "CategorySource",
-                method: "createCategory",
-                metadata: handledResult.error));
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Category created successfully",
+          context: LogContext(
+            module: "CategorySource",
+            method: "createCategory",
+          ),
+        );
+        return Result.data(result.data?.data);
       }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error creating category: $e",
-          context: LogContext(module: "CategorySource", method: "createCategory"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("createCategory", e);
     }
   }
 
   Future<Result<RemoteBaseModel, dynamic>> getActiveCategories() async {
     try {
-      JDRepoConsole.info("Fetching active categories",
-          context: LogContext(module: "CategorySource", method: "getActiveCategories"));
+      JDRepoConsole.info(
+        "Fetching active categories",
+        context: LogContext(
+          module: "CategorySource",
+          method: "getActiveCategories",
+        ),
+      );
       String url = "${ApiUrls.BASE_URL}${EndPoints.activeCategories}";
       final result = await HttpClient(userToken: false).sendRequest(
         method: HttpMethod.GET,
         url: url,
         cancelToken: CancelToken(),
       );
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Active categories fetched successfully",
-            context: LogContext(module: "CategorySource", method: "getActiveCategories"));
-      } else {
-        JDRepoConsole.error("Failed to fetch active categories",
-            context: LogContext(
-                module: "CategorySource",
-                method: "getActiveCategories",
-                metadata: handledResult.error));
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Active categories fetched successfully",
+          context: LogContext(
+            module: "CategorySource",
+            method: "getActiveCategories",
+          ),
+        );
+        return Result.data(result.data?.data);
       }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error fetching active categories: $e",
-          context: LogContext(module: "CategorySource", method: "getActiveCategories"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getActiveCategories", e);
     }
   }
 
@@ -110,9 +108,13 @@ class CategorySource {
     String organizationId,
   ) async {
     try {
-      JDRepoConsole.info("Fetching categories for organization: $organizationId",
-          context:
-              LogContext(module: "CategorySource", method: "getCategoriesByOrganization"));
+      JDRepoConsole.info(
+        "Fetching categories for organization: $organizationId",
+        context: LogContext(
+          module: "CategorySource",
+          method: "getCategoriesByOrganization",
+        ),
+      );
       String url =
           "${ApiUrls.BASE_URL}${EndPoints.orgCategories(organizationId)}";
       final result = await HttpClient(userToken: false).sendRequest(
@@ -120,26 +122,20 @@ class CategorySource {
         url: url,
         cancelToken: CancelToken(),
       );
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Categories fetched successfully",
-            context:
-                LogContext(module: "CategorySource", method: "getCategoriesByOrganization"));
-      } else {
-        JDRepoConsole.error("Failed to fetch categories",
-            context: LogContext(
-                module: "CategorySource",
-                method: "getCategoriesByOrganization",
-                metadata: handledResult.error));
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Categories fetched successfully",
+          context: LogContext(
+            module: "CategorySource",
+            method: "getCategoriesByOrganization",
+          ),
+        );
+        return Result.data(result.data?.data);
       }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error fetching categories: $e",
-          context:
-              LogContext(module: "CategorySource", method: "getCategoriesByOrganization"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getCategoriesByOrganization", e);
     }
   }
 
@@ -152,8 +148,10 @@ class CategorySource {
     bool trigger = true,
   }) async {
     try {
-      JDRepoConsole.info("Updating category: $categoryId",
-          context: LogContext(module: "CategorySource", method: "updateCategory"));
+      JDRepoConsole.info(
+        "Updating category: $categoryId",
+        context: LogContext(module: "CategorySource", method: "updateCategory"),
+      );
       String url =
           "${ApiUrls.BASE_URL}${EndPoints.categories}/$categoryId?trigger=$trigger";
 
@@ -184,24 +182,20 @@ class CategorySource {
           cancelToken: CancelToken(),
         );
       }
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Category updated successfully",
-            context: LogContext(module: "CategorySource", method: "updateCategory"));
-      } else {
-        JDRepoConsole.error("Category update failed",
-            context: LogContext(
-                module: "CategorySource",
-                method: "updateCategory",
-                metadata: handledResult.error));
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Category updated successfully",
+          context: LogContext(
+            module: "CategorySource",
+            method: "updateCategory",
+          ),
+        );
+        return Result.data(result.data?.data);
       }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error updating category: $e",
-          context: LogContext(module: "CategorySource", method: "updateCategory"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("updateCategory", e);
     }
   }
 
@@ -210,8 +204,10 @@ class CategorySource {
     bool trigger = true,
   }) async {
     try {
-      JDRepoConsole.info("Deleting category: $categoryId",
-          context: LogContext(module: "CategorySource", method: "deleteCategory"));
+      JDRepoConsole.info(
+        "Deleting category: $categoryId",
+        context: LogContext(module: "CategorySource", method: "deleteCategory"),
+      );
       String url =
           "${ApiUrls.BASE_URL}${EndPoints.categories}/$categoryId?trigger=$trigger";
       final result = await HttpClient(userToken: true).sendRequest(
@@ -219,37 +215,96 @@ class CategorySource {
         url: url,
         cancelToken: CancelToken(),
       );
-      final handledResult = _handleResult(result);
-      if (handledResult.data != null) {
-        JDRepoConsole.success("Category deleted successfully",
-            context: LogContext(module: "CategorySource", method: "deleteCategory"));
-      } else {
-        JDRepoConsole.error("Category deletion failed",
-            context: LogContext(
-                module: "CategorySource",
-                method: "deleteCategory",
-                metadata: handledResult.error));
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Category deleted successfully",
+          context: LogContext(
+            module: "CategorySource",
+            method: "deleteCategory",
+          ),
+        );
+        return Result.data(result.data?.data);
       }
-      return handledResult;
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error("Error deleting category: $e",
-          context: LogContext(module: "CategorySource", method: "deleteCategory"));
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("deleteCategory", e);
     }
   }
 
-  Result<RemoteBaseModel, dynamic> _handleResult(
+  Result<RemoteBaseModel, dynamic> _wrap(
     Result<RemoteBaseModel, RemoteBaseModel> result,
   ) {
     if (result.data?.status == StatusModel.success) {
       return Result.data(result.data?.data);
     }
+
+    String? message = result.error?.message ?? result.data?.message;
+
+    // Try to extract more details if message is still null or generic
+    if (result.data?.data is Map) {
+      final dataMap = result.data?.data as Map;
+      final msg =
+          dataMap['message'] ??
+          dataMap['error'] ??
+          dataMap['errors'] ??
+          dataMap['detail'];
+      if (msg != null) {
+        if (msg is List) {
+          message = msg.join(', ');
+        } else {
+          message = msg.toString();
+        }
+      }
+    }
+
     return Result.error(
       RemoteBaseModel(
-        message: result.error?.message ?? result.data?.message,
+        message: message ?? 'خطأ غير معروف في الباك اند',
         status: result.data?.status ?? StatusModel.error,
+        data: result.data?.data ?? result.error?.data,
+      ),
+    );
+  }
+
+  Result<RemoteBaseModel, dynamic> _catchError(String method, Object e) {
+    JDRepoConsole.error(
+      "Error in $method: $e",
+      context: LogContext(module: "CategorySource", method: method),
+    );
+
+    String message = "حدث خطأ غير متوقع";
+    dynamic errorData;
+
+    if (e is DioException) {
+      errorData = e.response?.data;
+      if (errorData is Map) {
+        final msg =
+            errorData['message'] ??
+            errorData['error'] ??
+            errorData['errors'] ??
+            errorData['detail'];
+        if (msg != null) {
+          if (msg is List) {
+            message = msg.join(', ');
+          } else {
+            message = msg.toString();
+          }
+        } else {
+          message = e.message ?? "خطأ في الاتصال بالسيرفر";
+        }
+      } else {
+        message = e.message ?? "خطأ في الاتصال بالسيرفر";
+      }
+    } else {
+      message = e.toString();
+    }
+
+    return Result.error(
+      RemoteBaseModel(
+        message: message,
+        status: StatusModel.error,
+        data: errorData,
       ),
     );
   }

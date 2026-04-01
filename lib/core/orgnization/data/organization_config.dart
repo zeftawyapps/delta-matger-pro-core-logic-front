@@ -4,7 +4,8 @@ class OrganizationConfig {
   final ThemesConfig? themes;
   final LayoutConfig? layout;
   final SystemLicenseConfig? systemLicense;
-  final Map<String, bool>? features;
+  final Map<String, dynamic>? features;
+  final Map<String, dynamic>? productInput; // 🟢 الحقل الجديد
 
   OrganizationConfig({
     required this.id,
@@ -13,17 +14,38 @@ class OrganizationConfig {
     this.layout,
     this.systemLicense,
     this.features,
+    this.productInput, // 🟢 إضافة للـ constructor
   });
 
   factory OrganizationConfig.fromJson(Map<String, dynamic> json) {
     return OrganizationConfig(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
-      visual: json['visual'] != null ? VisualConfig.fromJson(Map<String, dynamic>.from(json['visual'])) : null,
-      themes: json['themes'] != null ? ThemesConfig.fromJson(Map<String, dynamic>.from(json['themes'])) : null,
-      layout: json['layout'] != null ? LayoutConfig.fromJson(Map<String, dynamic>.from(json['layout'])) : null,
-      systemLicense: json['systemLicense'] != null ? SystemLicenseConfig.fromJson(Map<String, dynamic>.from(json['systemLicense'])) : null,
-      features: json['features'] != null ? Map<String, bool>.from(json['features']) : null,
+      visual: json['visual'] != null
+          ? VisualConfig.fromJson(Map<String, dynamic>.from(json['visual']))
+          : null,
+      themes: json['themes'] != null
+          ? ThemesConfig.fromJson(Map<String, dynamic>.from(json['themes']))
+          : null,
+      layout: json['layout'] != null
+          ? LayoutConfig.fromJson(Map<String, dynamic>.from(json['layout']))
+          : null,
+      systemLicense: json['systemLicense'] != null
+          ? SystemLicenseConfig.fromJson(
+              Map<String, dynamic>.from(json['systemLicense']),
+            )
+          : null,
+      features: json['features'] != null
+          ? Map<String, dynamic>.from(json['features'])
+          : null,
+      productInput: json['productInput'] != null
+          ? Map<String, dynamic>.from(json['productInput'])
+          : null, // 🟢 قراءة الحقل الجديد
     );
+  }
+
+  ManagementFeaturesConfig? get feature {
+    if (features == null || features!['feature'] == null) return null;
+    return ManagementFeaturesConfig.fromJson(Map<String, dynamic>.from(features!['feature']));
   }
 
   Map<String, dynamic> toJson() {
@@ -34,6 +56,7 @@ class OrganizationConfig {
       if (layout != null) 'layout': layout!.toJson(),
       if (systemLicense != null) 'systemLicense': systemLicense!.toJson(),
       if (features != null) 'features': features,
+      if (productInput != null) 'productInput': productInput, // 🟢 إرسال الحقل الجديد
     };
   }
 }
@@ -71,9 +94,15 @@ class ThemesConfig {
 
   factory ThemesConfig.fromJson(Map<String, dynamic> json) {
     return ThemesConfig(
-      light: json['light'] != null ? ThemeColors.fromJson(Map<String, dynamic>.from(json['light'])) : null,
-      dark: json['dark'] != null ? ThemeColors.fromJson(Map<String, dynamic>.from(json['dark'])) : null,
-      website: json['website'] != null ? WebsiteTheme.fromJson(Map<String, dynamic>.from(json['website'])) : null,
+      light: json['light'] != null
+          ? ThemeColors.fromJson(Map<String, dynamic>.from(json['light']))
+          : null,
+      dark: json['dark'] != null
+          ? ThemeColors.fromJson(Map<String, dynamic>.from(json['dark']))
+          : null,
+      website: json['website'] != null
+          ? WebsiteTheme.fromJson(Map<String, dynamic>.from(json['website']))
+          : null,
     );
   }
 
@@ -87,7 +116,7 @@ class ThemesConfig {
 }
 
 class ThemeColors {
-  final Map<String, dynamic>? rawJson; 
+  final Map<String, dynamic>? rawJson;
   final String? primary;
   final String? onPrimary;
   final String? secondary;
@@ -285,8 +314,6 @@ class ThemeColors {
   int? get warningValue => _parseColor(warning);
 }
 
-
-
 class WebsiteTheme {
   final String? headerBackground;
   final String? footerBackground;
@@ -353,9 +380,15 @@ class LayoutConfig {
   factory LayoutConfig.fromJson(Map<String, dynamic> json) {
     return LayoutConfig(
       appTitle: json['appTitle'],
-      topNavIds: json['topNavIds'] != null ? List<String>.from(json['topNavIds']) : null,
-      desktopOrder: json['desktopOrder'] != null ? List<String>.from(json['desktopOrder']) : null,
-      mobileOrder: json['mobileOrder'] != null ? List<String>.from(json['mobileOrder']) : null,
+      topNavIds: json['topNavIds'] != null
+          ? List<String>.from(json['topNavIds'])
+          : null,
+      desktopOrder: json['desktopOrder'] != null
+          ? List<String>.from(json['desktopOrder'])
+          : null,
+      mobileOrder: json['mobileOrder'] != null
+          ? List<String>.from(json['mobileOrder'])
+          : null,
       showSearch: json['showSearch'],
       showCart: json['showCart'],
       showUser: json['showUser'],
@@ -379,8 +412,10 @@ class LayoutConfig {
       if (showUser != null) 'showUser': showUser,
       if (showNavLinks != null) 'showNavLinks': showNavLinks,
       if (navbarBorderRadius != null) 'navbarBorderRadius': navbarBorderRadius,
-      if (navbarHorizontalPadding != null) 'navbarHorizontalPadding': navbarHorizontalPadding,
-      if (navbarVerticalPadding != null) 'navbarVerticalPadding': navbarVerticalPadding,
+      if (navbarHorizontalPadding != null)
+        'navbarHorizontalPadding': navbarHorizontalPadding,
+      if (navbarVerticalPadding != null)
+        'navbarVerticalPadding': navbarVerticalPadding,
       if (navbarMaxWidth != null) 'navbarMaxWidth': navbarMaxWidth,
       if (scrollThreshold != null) 'scrollThreshold': scrollThreshold,
     };
@@ -408,9 +443,13 @@ class SystemLicenseConfig {
     return SystemLicenseConfig(
       isVerified: json['isVerified'] ?? false,
       licenseType: json['licenseType'] ?? 'Basic',
-      expiryDate: json['expiryDate'] != null ? DateTime.tryParse(json['expiryDate']) : null,
+      expiryDate: json['expiryDate'] != null
+          ? DateTime.tryParse(json['expiryDate'])
+          : null,
       maxUsersLimit: json['maxUsersLimit'] ?? 5,
-      specialPermissions: json['specialPermissions'] != null ? List<String>.from(json['specialPermissions']) : [],
+      specialPermissions: json['specialPermissions'] != null
+          ? List<String>.from(json['specialPermissions'])
+          : [],
       brandNameAlias: json['brandNameAlias'],
     );
   }
@@ -423,6 +462,86 @@ class SystemLicenseConfig {
       'maxUsersLimit': maxUsersLimit,
       'specialPermissions': specialPermissions,
       if (brandNameAlias != null) 'brandNameAlias': brandNameAlias,
+    };
+  }
+}
+
+class ManagementFeaturesConfig {
+  final ScreenFeatureConfig? categories;
+  final ScreenFeatureConfig? products;
+  final ScreenFeatureConfig? users;
+
+  ManagementFeaturesConfig({this.categories, this.products, this.users});
+
+  factory ManagementFeaturesConfig.fromJson(Map<String, dynamic> json) {
+    return ManagementFeaturesConfig(
+      categories: json['categories'] != null ? ScreenFeatureConfig.fromJson(Map<String, dynamic>.from(json['categories'])) : null,
+      products: json['products'] != null ? ScreenFeatureConfig.fromJson(Map<String, dynamic>.from(json['products'])) : null,
+      users: json['users'] != null ? ScreenFeatureConfig.fromJson(Map<String, dynamic>.from(json['users'])) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (categories != null) 'categories': categories!.toJson(),
+      if (products != null) 'products': products!.toJson(),
+      if (users != null) 'users': users!.toJson(),
+    };
+  }
+}
+
+class ScreenFeatureConfig {
+  final double? childAspectRatio;
+  final int? crossAxisCountSmall;
+  final int? crossAxisCountMedium;
+  final int? crossAxisCountLarge;
+  final double? crossAxisSpacing;
+  final double? mainAxisSpacing;
+  final List<double>? padding; // Stored as [top, right, bottom, left]
+  final int? debounceMs;
+  final bool? canAdd;
+  final bool? shrinkWrap;
+
+  ScreenFeatureConfig({
+    this.childAspectRatio,
+    this.crossAxisCountSmall,
+    this.crossAxisCountMedium,
+    this.crossAxisCountLarge,
+    this.crossAxisSpacing,
+    this.mainAxisSpacing,
+    this.padding,
+    this.debounceMs,
+    this.canAdd,
+    this.shrinkWrap,
+  });
+
+  factory ScreenFeatureConfig.fromJson(Map<String, dynamic> json) {
+    return ScreenFeatureConfig(
+      childAspectRatio: json['childAspectRatio']?.toDouble(),
+      crossAxisCountSmall: json['crossAxisCountSmall'],
+      crossAxisCountMedium: json['crossAxisCountMedium'],
+      crossAxisCountLarge: json['crossAxisCountLarge'],
+      crossAxisSpacing: json['crossAxisSpacing']?.toDouble(),
+      mainAxisSpacing: json['mainAxisSpacing']?.toDouble(),
+      padding: json['padding'] != null ? List<double>.from(json['padding']) : null,
+      debounceMs: json['debounceMs'],
+      canAdd: json['canAdd'],
+      shrinkWrap: json['shrinkWrap'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      if (childAspectRatio != null) 'childAspectRatio': childAspectRatio,
+      if (crossAxisCountSmall != null) 'crossAxisCountSmall': crossAxisCountSmall,
+      if (crossAxisCountMedium != null) 'crossAxisCountMedium': crossAxisCountMedium,
+      if (crossAxisCountLarge != null) 'crossAxisCountLarge': crossAxisCountLarge,
+      if (crossAxisSpacing != null) 'crossAxisSpacing': crossAxisSpacing,
+      if (mainAxisSpacing != null) 'mainAxisSpacing': mainAxisSpacing,
+      if (padding != null) 'padding': padding,
+      if (debounceMs != null) 'debounceMs': debounceMs,
+      if (canAdd != null) 'canAdd': canAdd,
+      if (shrinkWrap != null) 'shrinkWrap': shrinkWrap,
     };
   }
 }

@@ -45,6 +45,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
+        data: null,
       );
     }
 
@@ -69,6 +70,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
+        data: null,
       );
     }
 
@@ -91,6 +93,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
+        data: null,
       );
     }
 
@@ -115,6 +118,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: 'Parsing Error: $e',
+        data: null,
       );
     }
   }
@@ -137,6 +141,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
+        data: null,
       );
     }
 
@@ -161,10 +166,67 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
+        data: null,
       );
     }
 
     return _parseSingle(result.data, 'getProfileById');
+  }
+
+  // ─── Search ─────────────────────────────────────────────────────────────────
+
+  /// البحث العام عن المستخدمين.
+  Future<RemoteBaseModel<List<UserProfileModel>>> searchProfiles({
+    String? term,
+  }) async {
+    JDRepoConsole.info(
+      'Searching profiles in repo with term: $term',
+      context: LogContext(module: 'UserRepo', method: 'searchProfiles'),
+    );
+    final result = await _userSource.searchProfiles(term: term);
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        'Source error in searchProfiles: ${result.error?.message}',
+        context: LogContext(module: 'UserRepo', method: 'searchProfiles'),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+        data: null,
+      );
+    }
+
+    return _parseList(result.data, 'searchProfiles');
+  }
+
+  /// البحث عن المستخدمين داخل منظمة محددة.
+  Future<RemoteBaseModel<List<UserProfileModel>>> searchProfilesInOrg({
+    required String organizationId,
+    String? term,
+  }) async {
+    JDRepoConsole.info(
+      'Searching profiles in organization $organizationId in repo with term: $term',
+      context: LogContext(module: 'UserRepo', method: 'searchProfilesInOrg'),
+    );
+    final result = await _userSource.searchProfilesInOrg(
+      organizationId: organizationId,
+      term: term,
+    );
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        'Source error in searchProfilesInOrg: ${result.error?.message}',
+        context: LogContext(module: 'UserRepo', method: 'searchProfilesInOrg'),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+        data: null,
+      );
+    }
+
+    return _parseList(result.data, 'searchProfilesInOrg');
   }
 
   // ─── Update ───────────────────────────────────────────────────────────────
@@ -201,6 +263,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
+        data: null,
       );
     }
 
@@ -241,6 +304,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
+        data: null,
       );
     }
 
@@ -265,7 +329,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
-        data: false,
+        data: null,
       );
     }
 
@@ -292,7 +356,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
-        data: false,
+        data: null,
       );
     }
 
@@ -327,7 +391,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
-        data: false,
+        data: null,
       );
     }
 
@@ -360,7 +424,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
-        data: false,
+        data: null,
       );
     }
 
@@ -401,6 +465,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: 'Parsing Error: $e',
+        data: null,
       );
     }
   }
@@ -435,6 +500,7 @@ class UserRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: 'Parsing Error: $e',
+        data: null,
       );
     }
   }

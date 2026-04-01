@@ -1,4 +1,5 @@
 import 'package:JoDija_reposatory/constes/api_urls.dart';
+import 'package:matger_core_logic/utls/type_parser.dart';
 import 'package:matger_core_logic/models/entity_meta.dart';
 
 /// وحدة المنتج (Product Unit)
@@ -61,27 +62,32 @@ class PriceOption {
 
   factory PriceOption.fromJson(Map<String, dynamic> json) {
     return PriceOption(
-      quantity: (json['quantity'] as num? ?? 0).toDouble(),
+      quantity: TypeParser.parseDouble(json['quantity']),
       unit: json['unit'] as String? ?? '',
-      price: (json['price'] as num? ?? 0).toDouble(),
-      oldPrice: json['oldPrice'] != null
-          ? (json['oldPrice'] as num).toDouble()
-          : null,
-      isDefault: json['isDefault'] ?? false,
+      price: TypeParser.parseDouble(json['price']),
+      oldPrice:
+          json['oldPrice'] != null ? TypeParser.parseDouble(json['oldPrice']) : null,
+      isDefault: TypeParser.parseBool(json['isDefault']),
       sizeDisplay: json['sizeDisplay'] != null
           ? LocalizedString.fromJson(json['sizeDisplay'])
           : null,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'quantity': quantity,
-    'unit': unit,
-    'price': price,
-    'oldPrice': oldPrice,
-    'isDefault': isDefault,
-    'sizeDisplay': sizeDisplay?.toJson(),
-  };
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{
+      'quantity': quantity,
+      'unit': unit,
+      'price': price,
+      'oldPrice': oldPrice,
+      'isDefault': isDefault,
+    };
+    if (sizeDisplay != null) {
+      map['sizeDisplay'] = sizeDisplay!.toJson();
+    }
+    return map;
+  }
 }
 
 class ProductData {
@@ -92,7 +98,7 @@ class ProductData {
   final double price;
   final double? oldPrice;
   final double? cost;
-  final List<String> imageUrls;
+  final List<String> images;
   final bool isActive;
   final int stockQuantity;
   final bool isNew;
@@ -116,7 +122,7 @@ class ProductData {
     required this.price,
     this.oldPrice,
     this.cost,
-    this.imageUrls = const [],
+    this.images = const [],
     this.isActive = true,
     this.stockQuantity = 0,
     this.isNew = false,
@@ -173,17 +179,11 @@ class ProductData {
       name: LocalizedString.fromJson(json['name']),
       categoryId: (json['categoryId'] ?? json['category'] ?? '') as String,
       organizationId: (json['organizationId'] as String? ?? ''),
-      price: (json['price'] as num? ?? 0.0).toDouble(),
-      oldPrice: (json['oldPrice'] as num?)?.toDouble(),
-      cost: (json['cost'] as num?)?.toDouble(),
-      imageUrls:
-          (json['imageUrls'] as List?)
-              ?.map(
-                (e) => e.toString().contains('http')
-                    ? e.toString()
-                    : ApiUrls.IMAGE_BASE_URL + e.toString(),
-              )
-              .toList() ??
+      price: TypeParser.parseDouble(json['price']),
+      oldPrice:
+          json['oldPrice'] != null ? TypeParser.parseDouble(json['oldPrice']) : null,
+      cost: json['cost'] != null ? TypeParser.parseDouble(json['cost']) : null,
+      images:
           (json['images'] as List?)
               ?.map(
                 (e) => e.toString().contains('http')
@@ -191,22 +191,30 @@ class ProductData {
                     : ApiUrls.IMAGE_BASE_URL + e.toString(),
               )
               .toList() ??
+          (json['imageUrls'] as List?)
+              ?.map(
+                (e) => e.toString().contains('http')
+                    ? e.toString()
+                    : ApiUrls.IMAGE_BASE_URL + e.toString(),
+              )
+              .toList() ??
           [],
-      isActive: json['isActive'] as bool? ?? true,
-      stockQuantity: (json['stockQuantity'] as num? ?? 0).toInt(),
-      isNew: json['isNew'] as bool? ?? false,
-      isBestSeller: json['isBestSeller'] as bool? ?? false,
-      isAvailable: json['isAvailable'] as bool? ?? true,
-      discount: (json['discount'] as num?)?.toDouble(),
-      rating: (json['rating'] as num? ?? 0.0).toDouble(),
+      isActive: TypeParser.parseBool(json['isActive'], true),
+      stockQuantity: TypeParser.parseInt(json['stockQuantity']),
+      isNew: TypeParser.parseBool(json['isNew']),
+      isBestSeller: TypeParser.parseBool(json['isBestSeller']),
+      isAvailable: TypeParser.parseBool(json['isAvailable'], true),
+      discount:
+          json['discount'] != null ? TypeParser.parseDouble(json['discount']) : null,
+      rating: TypeParser.parseDouble(json['rating']),
       priceOptions:
           (json['priceOptions'] as List?)
               ?.map((e) => PriceOption.fromJson(e))
               .toList() ??
           [],
-      isJoker: json['isJoker'] as bool? ?? false,
-      isSuperJoker: json['isSuperJoker'] as bool? ?? false,
-      isOnSale: json['isOnSale'] as bool? ?? false,
+      isJoker: TypeParser.parseBool(json['isJoker']),
+      isSuperJoker: TypeParser.parseBool(json['isSuperJoker']),
+      isOnSale: TypeParser.parseBool(json['isOnSale']),
       additionalData:
           json['additionalData'] as Map<String, dynamic>? ?? additional,
       meta: json['meta'] != null ? EntityMeta.fromJson(json['meta']) : null,
@@ -225,7 +233,7 @@ class ProductData {
       'price': price,
       'oldPrice': oldPrice,
       'cost': cost,
-      'imageUrls': imageUrls,
+      'images': images,
       'isActive': isActive,
       'stockQuantity': stockQuantity,
       'isNew': isNew,
@@ -247,7 +255,7 @@ class ProductData {
 
   /// الحصول على الصورة الأساسية
   String get mainImage =>
-      imageUrls.isNotEmpty ? imageUrls.first : 'assets/placeholder.png';
+      images.isNotEmpty ? images.first : 'assets/placeholder.png';
 
   /// حساب السعر النهائي بعد الخصم
   double get finalPrice {

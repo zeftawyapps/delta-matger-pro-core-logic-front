@@ -1,4 +1,5 @@
 import 'package:JoDija_reposatory/constes/api_urls.dart';
+import 'package:matger_core_logic/utls/type_parser.dart';
 import 'package:matger_core_logic/models/entity_meta.dart';
 
 class CategoryData {
@@ -10,6 +11,7 @@ class CategoryData {
   final String? imageUrl;
   final bool isActive;
   final int? displayOrder;
+  final int? productCount;
 
   CategoryData({
     required this.categoryId,
@@ -20,11 +22,12 @@ class CategoryData {
     this.imageUrl,
     this.isActive = true,
     this.displayOrder,
+    this.productCount,
   });
 
   factory CategoryData.fromJson(Map<String, dynamic> json) {
     return CategoryData(
-      categoryId: json['categoryId'] as String? ?? '',
+      categoryId: json['categoryId'] as String? ?? json['_id'] as String? ?? '',
       name: json['name'] as String? ?? '',
       organizationId: json['organizationId'] as String? ?? '',
       meta: json['meta'] != null
@@ -34,8 +37,9 @@ class CategoryData {
       imageUrl: json['imageUrl'] != null
           ? ApiUrls.IMAGE_BASE_URL + json['imageUrl']
           : null,
-      isActive: json['isActive'] as bool? ?? true,
-      displayOrder: json['displayOrder'] as int?,
+      isActive: TypeParser.parseBool(json['isActive'], true),
+      displayOrder: TypeParser.parseInt(json['displayOrder']),
+      productCount: TypeParser.parseInt(json['productCount']),
     );
   }
 
@@ -49,6 +53,7 @@ class CategoryData {
       'imageUrl': imageUrl,
       'isActive': isActive,
       'displayOrder': displayOrder,
+      'productCount': productCount,
     };
   }
 
@@ -61,6 +66,7 @@ class CategoryData {
     String? imageUrl,
     bool? isActive,
     int? displayOrder,
+    int? productCount,
   }) {
     return CategoryData(
       categoryId: categoryId ?? this.categoryId,
@@ -71,11 +77,12 @@ class CategoryData {
       imageUrl: imageUrl ?? this.imageUrl,
       isActive: isActive ?? this.isActive,
       displayOrder: displayOrder ?? this.displayOrder,
+      productCount: productCount ?? this.productCount,
     );
   }
 
   @override
   String toString() {
-    return 'CategoryData(categoryId: $categoryId, name: $name, organizationId: $organizationId, isActive: $isActive)';
+    return 'CategoryData(categoryId: $categoryId, name: $name, organizationId: $organizationId, isActive: $isActive, productCount: $productCount)';
   }
 }

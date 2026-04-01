@@ -13,6 +13,11 @@ class DataSourceBloc<T> extends Cubit<DataSourceBaseState<T>> {
       );
   T? _data;
 
+  void init() {
+    _data = null;
+    emit(const DataSourceBaseState.init());
+  }
+
   T? get data => _data;
 
   set data(T? value) {

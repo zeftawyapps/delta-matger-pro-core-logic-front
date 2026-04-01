@@ -73,4 +73,9 @@ class EndPoints {
   static String userRoles(String userId) => "/profiles/$userId/roles";
   static String removeUserRole(String userId, String roleName) =>
       "/profiles/$userId/roles/$roleName";
+
+  // Search
+  static const String searchProfiles = "/profiles/search";
+  static String searchProfilesInOrg(String organizationId) =>
+      "/profiles/organization/$organizationId/search";
 }

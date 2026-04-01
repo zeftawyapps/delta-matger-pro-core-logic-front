@@ -31,35 +31,8 @@ class AuthSource {
         context: LogContext(module: "AuthSource", method: "login"),
       );
       return Result.data(data);
-    } on DioError catch (e) {
-      JDRepoConsole.error(
-        "Login DioError: ${e.message}",
-        context: LogContext(
-          module: "AuthSource",
-          method: "login",
-          metadata: e.response?.data,
-        ),
-      );
-
-      final errorMessage = (e.response?.data is Map)
-          ? e.response?.data['message']?.toString() ?? e.message
-          : e.message;
-
-      return Result.error(
-        RemoteBaseModel(
-          message: errorMessage,
-          status: StatusModel.error,
-          data: e.response?.data,
-        ),
-      );
     } catch (e) {
-      JDRepoConsole.error(
-        "Login Error: $e",
-        context: LogContext(module: "AuthSource", method: "login"),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("login", e);
     }
   }
 
@@ -86,35 +59,8 @@ class AuthSource {
         context: LogContext(module: "AuthSource", method: "loginOrg"),
       );
       return Result.data(data);
-    } on DioError catch (e) {
-      JDRepoConsole.error(
-        "LoginOrg DioError: ${e.message}",
-        context: LogContext(
-          module: "AuthSource",
-          method: "loginOrg",
-          metadata: e.response?.data,
-        ),
-      );
-
-      final errorMessage = (e.response?.data is Map)
-          ? e.response?.data['message']?.toString() ?? e.message
-          : e.message;
-
-      return Result.error(
-        RemoteBaseModel(
-          message: errorMessage,
-          status: StatusModel.error,
-          data: e.response?.data,
-        ),
-      );
     } catch (e) {
-      JDRepoConsole.error(
-        "LoginOrg Error: $e",
-        context: LogContext(module: "AuthSource", method: "loginOrg"),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("loginOrg", e);
     }
   }
 
@@ -141,28 +87,9 @@ class AuthSource {
         );
         return Result.data(result.data?.data);
       }
-      JDRepoConsole.error(
-        "Register failed",
-        context: LogContext(
-          module: "AuthSource",
-          method: "register",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "Register Error: $e",
-        context: LogContext(module: "AuthSource", method: "register"),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("register", e);
     }
   }
 
@@ -186,28 +113,83 @@ class AuthSource {
         );
         return Result.data(result.data?.data);
       }
-      JDRepoConsole.error(
-        "Failed to fetch profile",
-        context: LogContext(
-          module: "AuthSource",
-          method: "getProfile",
-          metadata: result.error,
-        ),
-      );
-      return Result.error(
-        RemoteBaseModel(
-          message: result.error?.message,
-          status: result.data?.status ?? StatusModel.error,
-        ),
-      );
+      return _wrap(result);
     } catch (e) {
-      JDRepoConsole.error(
-        "GetProfile Error: $e",
-        context: LogContext(module: "AuthSource", method: "getProfile"),
-      );
-      return Result.error(
-        RemoteBaseModel(message: e.toString(), status: StatusModel.error),
-      );
+      return _catchError("getProfile", e);
     }
+  }
+
+  Result<RemoteBaseModel, dynamic> _wrap(
+    Result<RemoteBaseModel, RemoteBaseModel> result,
+  ) {
+    if (result.data?.status == StatusModel.success) {
+      return Result.data(result.data?.data);
+    }
+
+    String? message = result.error?.message ?? result.data?.message;
+
+    if (result.data?.data is Map) {
+      final dataMap = result.data?.data as Map;
+      final msg = dataMap['message'] ??
+          dataMap['error'] ??
+          dataMap['errors'] ??
+          dataMap['detail'];
+      if (msg != null) {
+        if (msg is List) {
+          message = msg.join(', ');
+        } else {
+          message = msg.toString();
+        }
+      }
+    }
+
+    return Result.error(
+      RemoteBaseModel(
+        message: message ?? 'خطأ غير معروف',
+        status: result.data?.status ?? StatusModel.error,
+        data: result.data?.data ?? result.error?.data,
+      ),
+    );
+  }
+
+  Result<RemoteBaseModel, dynamic> _catchError(String method, Object e) {
+    JDRepoConsole.error(
+      "Error in $method: $e",
+      context: LogContext(module: "AuthSource", method: method),
+    );
+
+    String message = "حدث خطأ غير متوقع";
+    dynamic errorData;
+
+    if (e is DioException) {
+      errorData = e.response?.data;
+      if (errorData is Map) {
+        final msg = errorData['message'] ??
+            errorData['error'] ??
+            errorData['errors'] ??
+            errorData['detail'];
+        if (msg != null) {
+          if (msg is List) {
+            message = msg.join(', ');
+          } else {
+            message = msg.toString();
+          }
+        } else {
+          message = e.message ?? "خطأ في الاتصال بالسيرفر";
+        }
+      } else {
+        message = e.message ?? "خطأ في الاتصال بالسيرفر";
+      }
+    } else {
+      message = e.toString();
+    }
+
+    return Result.error(
+      RemoteBaseModel(
+        message: message,
+        status: StatusModel.error,
+        data: errorData,
+      ),
+    );
   }
 }

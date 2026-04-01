@@ -1,4 +1,5 @@
 import 'package:matger_core_logic/models/entity_meta.dart';
+import 'package:matger_core_logic/utls/type_parser.dart';
 
 class OrderData {
   final String orderId;
@@ -44,8 +45,7 @@ class OrderData {
       organizationId:
           (json['organizationId'] ?? json['shopId'] ?? '') as String,
       customerId: (json['customerId'] ?? json['userId']) as String?,
-      totalAmount: (json['totalAmount'] ?? json['totalPrice'] as num? ?? 0.0)
-          .toDouble(),
+      totalAmount: TypeParser.parseDouble(json['totalAmount'] ?? json['totalPrice']),
       status: (json['status'] as String? ?? 'pending'),
       items:
           (json['items'] as List?)
@@ -88,8 +88,8 @@ class OrderItemData {
     return OrderItemData(
       productId: (json['productId'] ?? '') as String,
       name: json['name'] as String?,
-      quantity: (json['quantity'] as num? ?? 1).toInt(),
-      price: (json['price'] as num? ?? 0.0).toDouble(),
+      quantity: TypeParser.parseInt(json['quantity'], 1),
+      price: TypeParser.parseDouble(json['price']),
     );
   }
 
