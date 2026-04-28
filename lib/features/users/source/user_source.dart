@@ -6,7 +6,7 @@ import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/result/result.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
 import 'package:dio/dio.dart';
-import 'package:matger_core_logic/consts/end_points.dart';
+import 'package:matger_pro_core_logic/consts/end_points.dart';
 
 class UserSource {
   UserSource();
@@ -98,8 +98,7 @@ class UserSource {
     try {
       JDRepoConsole.info(
         'Fetching profiles by role: $role',
-        context:
-            LogContext(module: 'UserSource', method: 'getProfilesByRole'),
+        context: LogContext(module: 'UserSource', method: 'getProfilesByRole'),
       );
       final url = '${ApiUrls.BASE_URL}${EndPoints.profilesByRole(role)}';
       final result = await HttpClient(userToken: true).sendRequest(
@@ -114,9 +113,7 @@ class UserSource {
   }
 
   /// جلب بيانات مستخدم محدد بالـ ID.
-  Future<Result<RemoteBaseModel, dynamic>> getProfileById(
-    String userId,
-  ) async {
+  Future<Result<RemoteBaseModel, dynamic>> getProfileById(String userId) async {
     try {
       JDRepoConsole.info(
         'Fetching profile by id: $userId',
@@ -150,9 +147,7 @@ class UserSource {
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.GET,
         url: url,
-        queryParameters: {
-          if (term != null && term.isNotEmpty) 'term': term,
-        },
+        queryParameters: {if (term != null && term.isNotEmpty) 'term': term},
         cancelToken: CancelToken(),
       );
       return _wrap(result);
@@ -171,16 +166,17 @@ class UserSource {
     try {
       JDRepoConsole.info(
         'Searching profiles in organization $organizationId with term: $term',
-        context: LogContext(module: 'UserSource', method: 'searchProfilesInOrg'),
+        context: LogContext(
+          module: 'UserSource',
+          method: 'searchProfilesInOrg',
+        ),
       );
       final url =
           '${ApiUrls.BASE_URL}${EndPoints.searchProfilesInOrg(organizationId)}';
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.GET,
         url: url,
-        queryParameters: {
-          if (term != null && term.isNotEmpty) 'term': term,
-        },
+        queryParameters: {if (term != null && term.isNotEmpty) 'term': term},
         cancelToken: CancelToken(),
       );
       return _wrap(result);
@@ -337,8 +333,7 @@ class UserSource {
     try {
       JDRepoConsole.info(
         'Removing role $roleName from user: $userId',
-        context:
-            LogContext(module: 'UserSource', method: 'removeRoleFromUser'),
+        context: LogContext(module: 'UserSource', method: 'removeRoleFromUser'),
       );
       final url =
           '${ApiUrls.BASE_URL}${EndPoints.removeUserRole(userId, roleName)}';
@@ -366,7 +361,8 @@ class UserSource {
 
     if (result.data?.data is Map) {
       final dataMap = result.data?.data as Map;
-      final msg = dataMap['message'] ??
+      final msg =
+          dataMap['message'] ??
           dataMap['error'] ??
           dataMap['errors'] ??
           dataMap['detail'];
@@ -397,10 +393,11 @@ class UserSource {
     String message = "حدث خطأ غير متوقع";
     dynamic errorData;
 
-    if (e is DioException) {
+    if (e is DioError) {
       errorData = e.response?.data;
       if (errorData is Map) {
-        final msg = errorData['message'] ??
+        final msg =
+            errorData['message'] ??
             errorData['error'] ??
             errorData['errors'] ??
             errorData['detail'];

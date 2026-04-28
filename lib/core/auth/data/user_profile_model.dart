@@ -1,5 +1,5 @@
-import 'package:matger_core_logic/core/auth/data/user_model.dart';
-import 'package:matger_core_logic/core/orgnization/data/organization_model.dart';
+import 'package:matger_pro_core_logic/core/auth/data/user_model.dart';
+import 'package:matger_pro_core_logic/core/orgnization/data/organization_model.dart';
 
 class UserProfileModel extends UserDataDetailsModel {
   final String? website;

@@ -1,4 +1,4 @@
-import 'package:matger_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/models/entity_meta.dart';
 
 /// نموذج الدور الكامل المستخدم في شاشات إدارة الأدوار.
 /// يختلف عن [RoleModel] في core/auth/data بأنه:

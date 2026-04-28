@@ -1,4 +1,4 @@
-import 'package:matger_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/models/entity_meta.dart';
 
 enum PermissionType {
   read,
@@ -50,7 +50,7 @@ enum ResourceType {
 
   static ResourceType fromString(String value) {
     if (value == '*') return ResourceType.all;
-    
+
     // Handle screen. prefix
     String cleanValue = value;
     if (value.startsWith('screen.')) {
@@ -65,17 +65,23 @@ enum ResourceType {
 
   String toRawString() {
     if (this == ResourceType.all) return '*';
-    
+
     // Check if it's a screen resource
-    const screens = ['dashboard', 'reports', 'users', 'settings', 'orders', 'products'];
+    const screens = [
+      'dashboard',
+      'reports',
+      'users',
+      'settings',
+      'orders',
+      'products',
+    ];
     if (screens.contains(name)) {
       return 'screen.$name';
     }
-    
+
     return name;
   }
 }
-
 
 class PermissionModel {
   final String id;

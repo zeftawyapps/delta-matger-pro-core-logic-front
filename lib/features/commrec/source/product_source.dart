@@ -5,8 +5,9 @@ import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/result/result.dart';
 import 'package:dio/dio.dart';
-import 'package:matger_core_logic/consts/end_points.dart';
+import 'package:matger_pro_core_logic/consts/end_points.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
+import 'package:matger_pro_core_logic/features/commrec/request_body/product_request_bodies.dart';
 import 'dart:typed_data';
 
 class ProductSource {
@@ -53,10 +54,10 @@ class ProductSource {
         "isSuperJoker": isSuperJoker,
         "isAvailable": isAvailable,
         "priceOptions": priceOptions,
-        ...?(additionalData),
+        if (additionalData != null) ...additionalData,
       };
 
-      Result<RemoteBaseModel<dynamic>, RemoteBaseModel<dynamic>> result;
+      Result<RemoteBaseModel, RemoteBaseModel> result;
 
       if (imageBytes != null) {
         result = await HttpClient(userToken: true).uploadMapResult(
@@ -114,7 +115,7 @@ class ProductSource {
       );
       String url =
           "${ApiUrls.BASE_URL}${EndPoints.products}?page=$page&limit=$limit";
-      final result = await HttpClient(userToken: false).sendRequest(
+      final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.GET,
         url: url,
         cancelToken: CancelToken(),
@@ -144,7 +145,7 @@ class ProductSource {
       );
       String url =
           "${ApiUrls.BASE_URL}${EndPoints.searchProducts}?name=$name&organizationId=$organizationId";
-      final result = await HttpClient(userToken: false).sendRequest(
+      final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.GET,
         url: url,
         cancelToken: CancelToken(),
@@ -166,6 +167,41 @@ class ProductSource {
     }
   }
 
+  Future<Result<RemoteBaseModel, dynamic>> getProductsByCategory({
+    required String categoryId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching products for category: $categoryId - page: $page, limit: $limit",
+        context:
+            LogContext(module: "ProductSource", method: "getProductsByCategory"),
+      );
+      String url =
+          "${ApiUrls.BASE_URL}${EndPoints.productsByCategory(categoryId)}?page=$page&limit=$limit";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Products fetched successfully",
+          context: LogContext(
+            module: "ProductSource",
+            method: "getProductsByCategory",
+          ),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getProductsByCategory", e);
+    }
+  }
+
   Future<Result<RemoteBaseModel, dynamic>> updateStock({
     required String productId,
     required int quantity,
@@ -177,7 +213,7 @@ class ProductSource {
       );
       String url = "${ApiUrls.BASE_URL}${EndPoints.updateStock(productId)}";
       final result = await HttpClient(userToken: true).sendRequest(
-        method: HttpMethod.POST,
+        method: HttpMethod.PATCH,
         url: url,
         body: {"quantity": quantity},
         cancelToken: CancelToken(),
@@ -212,7 +248,7 @@ class ProductSource {
 
       Map<String, dynamic> body = Map<String, dynamic>.from(data);
 
-      Result<RemoteBaseModel<dynamic>, RemoteBaseModel<dynamic>> result;
+      Result<RemoteBaseModel, RemoteBaseModel> result;
 
       if (imageBytes != null) {
         result = await HttpClient(userToken: true).uploadMapResult(
@@ -288,6 +324,151 @@ class ProductSource {
     }
   }
 
+  // --- Bulk Operations ---
+
+  Future<Result<RemoteBaseModel, dynamic>> bulkCreateProducts({
+    required BulkCreateProductsRequest request,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Bulk creating ${request.products.length} products for org: ${request.organizationId}",
+        context: LogContext(
+          module: "ProductSource",
+          method: "bulkCreateProducts",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.bulkProducts}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("bulkCreateProducts", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> bulkUpdateProducts({
+    required BulkUpdateProductsRequest request,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Bulk updating ${request.productIds.length} products for org: ${request.organizationId}",
+        context: LogContext(
+          module: "ProductSource",
+          method: "bulkUpdateProducts",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.bulkUpdateProducts}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.PATCH,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("bulkUpdateProducts", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> bulkDeleteProducts({
+    required BulkDeleteProductsRequest request,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Bulk deleting ${request.productIds.length} products for org: ${request.organizationId}",
+        context: LogContext(
+          module: "ProductSource",
+          method: "bulkDeleteProducts",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.bulkDeleteProducts}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.DELETE,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("bulkDeleteProducts", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> bulkVariants({
+    required BulkVariantsRequest request,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Creating bulk variants for template in org: ${request.organizationId}",
+        context: LogContext(module: "ProductSource", method: "bulkVariants"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.bulkVariants}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("bulkVariants", e);
+    }
+  }
+
+  // --- Shared Pricing Tools ---
+
+  Future<Result<RemoteBaseModel, dynamic>> sharedPricingPreview({
+    required SharedPricingRequest request,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Previewing shared pricing for ${request.productIds.length} products",
+        context: LogContext(
+          module: "ProductSource",
+          method: "sharedPricingPreview",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.sharedPricingPreview}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("sharedPricingPreview", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> sharedPricingApply({
+    required SharedPricingRequest request,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Applying shared pricing to ${request.productIds.length} products",
+        context: LogContext(
+          module: "ProductSource",
+          method: "sharedPricingApply",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.sharedPricingApply}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("sharedPricingApply", e);
+    }
+  }
+
   Result<RemoteBaseModel, dynamic> _wrap(
     Result<RemoteBaseModel, RemoteBaseModel> result,
   ) {
@@ -331,7 +512,7 @@ class ProductSource {
     String message = "حدث خطأ غير متوقع";
     dynamic errorData;
 
-    if (e is DioException) {
+    if (e is DioError) {
       errorData = e.response?.data;
       if (errorData is Map) {
         final msg =

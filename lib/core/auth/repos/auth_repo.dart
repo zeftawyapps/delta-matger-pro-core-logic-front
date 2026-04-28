@@ -1,5 +1,5 @@
-import 'package:matger_core_logic/core/auth/data/user_model.dart';
-import 'package:matger_core_logic/core/auth/source/auth_source.dart';
+import 'package:matger_pro_core_logic/core/auth/data/user_model.dart';
+import 'package:matger_pro_core_logic/core/auth/source/auth_source.dart';
 import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
@@ -59,7 +59,8 @@ class AuthRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: "Parsing Error: $e",
+        message: result.error?.message ?? "خطأ في تسجيل الدخول",
+        data: null,
       );
     }
   }
@@ -114,7 +115,8 @@ class AuthRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: "Parsing Error: $e",
+        message: result.error?.message ?? "خطأ في تسجيل دخول المنظمة",
+        data: null,
       );
     }
   }
@@ -161,7 +163,8 @@ class AuthRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: "Parsing Error: $e",
+        message: result.error?.message ?? "خطأ في إنشاء الحساب",
+        data: null,
       );
     }
   }
@@ -206,7 +209,60 @@ class AuthRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: "Parsing Error: $e",
+        message: result.error?.message ?? "خطأ في عرض بيانات الملف الشخصي",
+        data: null,
+      );
+    }
+  }
+
+  Future<RemoteBaseModel<UserModel>> changePassword({
+    required String identifier,
+    required String newPassword,
+  }) async {
+    JDRepoConsole.info(
+      "Changing password in repo for: $identifier",
+      context: LogContext(module: "AuthRepo", method: "changePassword"),
+    );
+    final result = await _authSource.changePassword(
+      identifier: identifier,
+      newPassword: newPassword,
+    );
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in changePassword: ${result.error?.message}",
+        context: LogContext(module: "AuthRepo", method: "changePassword"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+      );
+    }
+
+    try {
+      final rawData = result.data as Map<String, dynamic>;
+      final data = (rawData.containsKey('data') && rawData['data'] is Map)
+          ? rawData['data'] as Map<String, dynamic>
+          : rawData;
+      final user = UserModel.fromJson(data);
+      JDRepoConsole.success(
+        "Password changed and user data parsed successfully in repo",
+        context: LogContext(module: "AuthRepo", method: "changePassword"),
+      );
+      return RemoteBaseModel(data: user, status: StatusModel.success);
+    } catch (e) {
+      JDRepoConsole.error(
+        "Parsing error in changePassword: $e",
+        context: LogContext(
+          module: "AuthRepo",
+          method: "changePassword",
+          metadata: result.data,
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message ?? "خطأ في معالجة بيانات المستخدم بعد تغيير كلمة المرور",
+        data: null,
       );
     }
   }

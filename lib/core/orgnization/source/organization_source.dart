@@ -5,34 +5,199 @@ import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/result/result.dart';
 import 'package:dio/dio.dart';
-import 'package:matger_core_logic/consts/end_points.dart';
+import 'package:matger_pro_core_logic/core/orgnization/data/organization_requests.dart';
+import 'package:matger_pro_core_logic/core/orgnization/data/organization_stats.dart';
+import 'package:matger_pro_core_logic/consts/end_points.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
 
 class OrganizationSource {
   Future<Result<RemoteBaseModel, dynamic>> createOrganizationWithOwner({
-    required Map<String, dynamic> userData,
-    required Map<String, dynamic> organizationData,
+    required CreateOrgWithOwnerRequest request,
   }) async {
     try {
-      JDRepoConsole.info(
-        "Creating organization with owner",
-        context: LogContext(
-          module: "OrganizationSource",
-          method: "createOrganizationWithOwner",
-        ),
-      );
+      JDRepoConsole.info("Creating organization with owner");
       String url = "${ApiUrls.BASE_URL}${EndPoints.createOrgWithOwner}";
-
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.POST,
         url: url,
-        body: {"userData": userData, "organizationData": organizationData},
+        body: request.toJson(),
         cancelToken: CancelToken(),
       );
-
       return _wrap(result);
     } catch (e) {
       return _catchError("createOrganizationWithOwner", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> createOrganizationForExistingUser({
+    required CreateOrgForExistingUserRequest request,
+  }) async {
+    try {
+      JDRepoConsole.info("Creating organization for existing user");
+      String url = "${ApiUrls.BASE_URL}${EndPoints.createOrgForExistingUser}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("createOrganizationForExistingUser", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> updateOrganization({
+    required String id,
+    required Map<String, dynamic> updateData,
+  }) async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.organizationById(id)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.PUT,
+        url: url,
+        body: updateData,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("updateOrganization", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> activateOrganization(String id) async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.activateOrganization(id)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.PUT,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("activateOrganization", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> deactivateOrganization(String id) async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.deactivateOrganization(id)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.PUT,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("deactivateOrganization", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> cloneOrganization({
+    required OrganizationCloneRequest request,
+  }) async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.cloneOrganization}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: request.toJson(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("cloneOrganization", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getOrganizationStats() async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.organizationStats}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getOrganizationStats", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getCompleteOrganizations() async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.completeOrganizations}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getCompleteOrganizations", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getIncompleteOrganizations() async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.incompleteOrganizations}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getIncompleteOrganizations", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> searchByLocation(
+    OrganizationLocationSearchRequest request,
+  ) async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.searchOrgByLocation}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        queryParameters: request.toQueryParams(),
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("searchByLocation", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> setTemplateStatus({
+    required String id,
+    required bool isTemplate,
+  }) async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.setOrgTemplateStatus(id)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.PUT,
+        url: url,
+        body: {"isTemplate": isTemplate},
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("setTemplateStatus", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> deleteOrganization(String id) async {
+    try {
+      String url = "${ApiUrls.BASE_URL}${EndPoints.organizationById(id)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.DELETE,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("deleteOrganization", e);
     }
   }
 
@@ -289,7 +454,8 @@ class OrganizationSource {
 
     if (result.data?.data is Map) {
       final dataMap = result.data?.data as Map;
-      final msg = dataMap['message'] ??
+      final msg =
+          dataMap['message'] ??
           dataMap['error'] ??
           dataMap['errors'] ??
           dataMap['detail'];
@@ -320,10 +486,11 @@ class OrganizationSource {
     String message = "حدث خطأ غير متوقع";
     dynamic errorData;
 
-    if (e is DioException) {
+    if (e is DioError) {
       errorData = e.response?.data;
       if (errorData is Map) {
-        final msg = errorData['message'] ??
+        final msg =
+            errorData['message'] ??
             errorData['error'] ??
             errorData['errors'] ??
             errorData['detail'];

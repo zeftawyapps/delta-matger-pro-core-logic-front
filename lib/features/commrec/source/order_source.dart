@@ -5,7 +5,7 @@ import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/result/result.dart';
 import 'package:dio/dio.dart';
-import 'package:matger_core_logic/consts/end_points.dart';
+import 'package:matger_pro_core_logic/consts/end_points.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
 
 class OrderSource {
@@ -13,19 +13,24 @@ class OrderSource {
 
   Future<Result<RemoteBaseModel, dynamic>> createOrder({
     required String organizationId,
-    String? customerId,
-    required double totalAmount,
+    required Map<String, dynamic> senderDetails,
+    required Map<String, dynamic> recipientDetails,
     required List<Map<String, dynamic>> items,
+    required double totalOrderPrice,
+    String orderMode = 'C2B',
     Map<String, dynamic>? additionalData,
   }) async {
     try {
-      JDRepoConsole.info("Creating order for organization: $organizationId",
-          context: LogContext(module: "OrderSource", method: "createOrder"));
-      String url = "${ApiUrls.BASE_URL}${EndPoints.orders}";
+      JDRepoConsole.info(
+        "Creating order for organization: $organizationId",
+        context: LogContext(module: "OrderSource", method: "createOrder"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.ordersByOrg(organizationId)}";
       final body = {
-        "organizationId": organizationId,
-        if (customerId != null) "customerId": customerId,
-        "totalAmount": totalAmount,
+        "senderDetails": senderDetails,
+        "recipientDetails": recipientDetails,
+        "totalOrderPrice": totalOrderPrice,
+        "orderMode": orderMode,
         "items": items,
         if (additionalData != null) ...additionalData,
       };
@@ -42,10 +47,52 @@ class OrderSource {
     }
   }
 
+  Future<Result<RemoteBaseModel, dynamic>> trackOrderStatus(String orderId) async {
+    try {
+      JDRepoConsole.info(
+        "Tracking status for order: $orderId",
+        context: LogContext(module: "OrderSource", method: "trackOrderStatus"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.trackingOrderStatus(orderId)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("trackOrderStatus", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> performWorkflowAction(
+    String orderId,
+    Map<String, dynamic> actionData,
+  ) async {
+    try {
+      JDRepoConsole.info(
+        "Performing workflow action for order: $orderId",
+        context: LogContext(module: "OrderSource", method: "performWorkflowAction"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.performWorkflowAction('orders', orderId)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.PUT,
+        url: url,
+        body: actionData,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("performWorkflowAction", e);
+    }
+  }
+
   Future<Result<RemoteBaseModel, dynamic>> getShopOrders(String shopId) async {
     try {
-      JDRepoConsole.info("Fetching orders for shop: $shopId",
-          context: LogContext(module: "OrderSource", method: "getShopOrders"));
+      JDRepoConsole.info(
+        "Fetching orders for shop: $shopId",
+        context: LogContext(module: "OrderSource", method: "getShopOrders"),
+      );
       String url = "${ApiUrls.BASE_URL}${EndPoints.shopOrders(shopId)}";
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.GET,
@@ -60,8 +107,10 @@ class OrderSource {
 
   Future<Result<RemoteBaseModel, dynamic>> getOrderById(String orderId) async {
     try {
-      JDRepoConsole.info("Fetching order by ID: $orderId",
-          context: LogContext(module: "OrderSource", method: "getOrderById"));
+      JDRepoConsole.info(
+        "Fetching order by ID: $orderId",
+        context: LogContext(module: "OrderSource", method: "getOrderById"),
+      );
       String url = "${ApiUrls.BASE_URL}${EndPoints.orderById(orderId)}";
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.GET,
@@ -79,8 +128,10 @@ class OrderSource {
     String status,
   ) async {
     try {
-      JDRepoConsole.info("Updating order status: $orderId to $status",
-          context: LogContext(module: "OrderSource", method: "updateOrderStatus"));
+      JDRepoConsole.info(
+        "Updating order status: $orderId to $status",
+        context: LogContext(module: "OrderSource", method: "updateOrderStatus"),
+      );
       String url = "${ApiUrls.BASE_URL}${EndPoints.updateOrderStatus(orderId)}";
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.PUT,
@@ -105,7 +156,8 @@ class OrderSource {
 
     if (result.data?.data is Map) {
       final dataMap = result.data?.data as Map;
-      final msg = dataMap['message'] ??
+      final msg =
+          dataMap['message'] ??
           dataMap['error'] ??
           dataMap['errors'] ??
           dataMap['detail'];
@@ -136,10 +188,11 @@ class OrderSource {
     String message = "حدث خطأ غير متوقع";
     dynamic errorData;
 
-    if (e is DioException) {
+    if (e is DioError) {
       errorData = e.response?.data;
       if (errorData is Map) {
-        final msg = errorData['message'] ??
+        final msg =
+            errorData['message'] ??
             errorData['error'] ??
             errorData['errors'] ??
             errorData['detail'];

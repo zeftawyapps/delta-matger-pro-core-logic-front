@@ -15,6 +15,8 @@ class SystemFeatures {
   static const String screenProducts = 'screen.products';
   static const String screenProfile = 'screen.profile';
   static const String screenCategories = 'screen.categories';
+  static const String screenOffers = 'screen.offers';
+  static const String screenPolicies = 'screen.policies';
   static const String product = 'product';
   static const String category = 'category';
   static const String order = 'order';
@@ -38,12 +40,14 @@ class SystemFeatures {
     screenProducts: {'ar': 'إدارة مخزون المنتجات', 'en': 'Product Inventory Screen'},
     screenProfile: {'ar': 'الملف الشخصي للمستخدم', 'en': 'User Profile Screen'},
     screenCategories: {'ar': 'إدارة تصنيفات المتجر', 'en': 'Store Categories Screen'},
+    screenOffers: {'ar': 'إدارة عروض المتجر', 'en': 'Store Offers Screen'},
     product: {'ar': 'المنتجات', 'en': 'Products'},
     category: {'ar': 'التصنيفات', 'en': 'Categories'},
     order: {'ar': 'الطلبات', 'en': 'Orders'},
     organization: {'ar': 'المنظمات', 'en': 'Organizations'},
     offer: {'ar': 'العروض', 'en': 'Offers'},
     orgnizationownerData: {'ar': 'بيانات مالك المنظمة', 'en': 'Organization Owner Data'},
+    screenPolicies: {'ar': 'سياسات المتجر', 'en': 'Store Policies'},
   };
 }
 

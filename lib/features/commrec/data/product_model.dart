@@ -1,6 +1,7 @@
 import 'package:JoDija_reposatory/constes/api_urls.dart';
-import 'package:matger_core_logic/utls/type_parser.dart';
-import 'package:matger_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/utls/type_parser.dart';
+import 'package:matger_pro_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/models/localized_string.dart';
 
 /// وحدة المنتج (Product Unit)
 enum ProductUnit {
@@ -17,29 +18,6 @@ enum ProductUnit {
   sachet,
   mm,
   custom,
-}
-
-/// كائن للتعامل مع النصوص المترجمة (Localized Strings)
-class LocalizedString {
-  final Map<String, String> values;
-
-  LocalizedString(this.values);
-
-  factory LocalizedString.fromJson(dynamic json) {
-    if (json is String) return LocalizedString({'ar': json, 'en': json});
-    if (json is Map) {
-      return LocalizedString(Map<String, String>.from(json));
-    }
-    return LocalizedString({'ar': '', 'en': ''});
-  }
-
-  String get(String lang) => values[lang] ?? values['ar'] ?? values['en'] ?? '';
-
-  // للحصول على النص العربي تلقائياً
-  String get ar => get('ar');
-  String get en => get('en');
-
-  Map<String, dynamic> toJson() => values;
 }
 
 /// خيارات السعر (مثل الأحجام المختلفة للمنتج)
@@ -65,15 +43,15 @@ class PriceOption {
       quantity: TypeParser.parseDouble(json['quantity']),
       unit: json['unit'] as String? ?? '',
       price: TypeParser.parseDouble(json['price']),
-      oldPrice:
-          json['oldPrice'] != null ? TypeParser.parseDouble(json['oldPrice']) : null,
+      oldPrice: json['oldPrice'] != null
+          ? TypeParser.parseDouble(json['oldPrice'])
+          : null,
       isDefault: TypeParser.parseBool(json['isDefault']),
       sizeDisplay: json['sizeDisplay'] != null
           ? LocalizedString.fromJson(json['sizeDisplay'])
           : null,
     );
   }
-
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{
@@ -91,7 +69,7 @@ class PriceOption {
 }
 
 class ProductData {
-  final String productId;
+  final String id;
   final LocalizedString name;
   final String categoryId;
   final String organizationId;
@@ -115,7 +93,7 @@ class ProductData {
   final DateTime? createdAt;
 
   ProductData({
-    required this.productId,
+    required this.id,
     required this.name,
     required this.categoryId,
     required this.organizationId,
@@ -138,6 +116,9 @@ class ProductData {
     this.meta,
     this.createdAt,
   });
+
+  // Alias for backward compatibility
+  String get productId => id;
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
     final coreFields = [
@@ -174,14 +155,14 @@ class ProductData {
       ..removeWhere((key, value) => coreFields.contains(key));
 
     return ProductData(
-      productId:
-          (json['id'] ?? json['productId'] ?? json['_id'] ?? '') as String,
+      id: (json['id'] ?? json['productId'] ?? json['_id'] ?? '') as String,
       name: LocalizedString.fromJson(json['name']),
       categoryId: (json['categoryId'] ?? json['category'] ?? '') as String,
       organizationId: (json['organizationId'] as String? ?? ''),
       price: TypeParser.parseDouble(json['price']),
-      oldPrice:
-          json['oldPrice'] != null ? TypeParser.parseDouble(json['oldPrice']) : null,
+      oldPrice: json['oldPrice'] != null
+          ? TypeParser.parseDouble(json['oldPrice'])
+          : null,
       cost: json['cost'] != null ? TypeParser.parseDouble(json['cost']) : null,
       images:
           (json['images'] as List?)
@@ -204,8 +185,9 @@ class ProductData {
       isNew: TypeParser.parseBool(json['isNew']),
       isBestSeller: TypeParser.parseBool(json['isBestSeller']),
       isAvailable: TypeParser.parseBool(json['isAvailable'], true),
-      discount:
-          json['discount'] != null ? TypeParser.parseDouble(json['discount']) : null,
+      discount: json['discount'] != null
+          ? TypeParser.parseDouble(json['discount'])
+          : null,
       rating: TypeParser.parseDouble(json['rating']),
       priceOptions:
           (json['priceOptions'] as List?)
@@ -226,7 +208,8 @@ class ProductData {
 
   Map<String, dynamic> toJson() {
     return {
-      'productId': productId,
+      'id': id,
+      'productId': id, // Added for backend compatibility in bulk operations
       'name': name.toJson(),
       'categoryId': categoryId,
       'organizationId': organizationId,
@@ -279,7 +262,11 @@ class ProductData {
   /// هل المنتج متوفر في المخزن؟
   bool get isInStock => isAvailable && stockQuantity > 0;
 
-  /// Flattened description for easier access
-  String get description =>
-      (additionalData['description'] ?? name.ar).toString();
+  /// Localized description from additionalData
+  LocalizedString get description {
+    if (additionalData['description'] != null) {
+      return LocalizedString.fromJson(additionalData['description']);
+    }
+    return name;
+  }
 }

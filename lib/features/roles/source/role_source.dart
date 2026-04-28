@@ -6,7 +6,7 @@ import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/result/result.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
 import 'package:dio/dio.dart';
-import 'package:matger_core_logic/consts/end_points.dart';
+import 'package:matger_pro_core_logic/consts/end_points.dart';
 
 class RoleSource {
   RoleSource();
@@ -225,7 +225,8 @@ class RoleSource {
 
     if (result.data?.data is Map) {
       final dataMap = result.data?.data as Map;
-      final msg = dataMap['message'] ??
+      final msg =
+          dataMap['message'] ??
           dataMap['error'] ??
           dataMap['errors'] ??
           dataMap['detail'];
@@ -256,10 +257,11 @@ class RoleSource {
     String message = "حدث خطأ غير متوقع";
     dynamic errorData;
 
-    if (e is DioException) {
+    if (e is DioError) {
       errorData = e.response?.data;
       if (errorData is Map) {
-        final msg = errorData['message'] ??
+        final msg =
+            errorData['message'] ??
             errorData['error'] ??
             errorData['errors'] ??
             errorData['detail'];

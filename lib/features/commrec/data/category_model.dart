@@ -1,20 +1,21 @@
 import 'package:JoDija_reposatory/constes/api_urls.dart';
-import 'package:matger_core_logic/utls/type_parser.dart';
-import 'package:matger_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/utls/type_parser.dart';
+import 'package:matger_pro_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/models/localized_string.dart';
 
 class CategoryData {
-  final String categoryId;
-  final String name;
+  final String id;
+  final LocalizedString name;
   final String organizationId;
   final EntityMeta? meta;
-  final String? description;
+  final LocalizedString? description;
   final String? imageUrl;
   final bool isActive;
   final int? displayOrder;
   final int? productCount;
 
   CategoryData({
-    required this.categoryId,
+    required this.id,
     required this.name,
     required this.organizationId,
     this.meta,
@@ -25,17 +26,24 @@ class CategoryData {
     this.productCount,
   });
 
+  // Alias for backward compatibility if needed
+  String get categoryId => id;
+
   factory CategoryData.fromJson(Map<String, dynamic> json) {
     return CategoryData(
-      categoryId: json['categoryId'] as String? ?? json['_id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      organizationId: json['organizationId'] as String? ?? '',
+      id: (json['id'] ?? json['categoryId'] ?? json['_id'] ?? '').toString(),
+      name: LocalizedString.fromJson(json['name']),
+      organizationId: (json['organizationId'] ?? '').toString(),
       meta: json['meta'] != null
           ? EntityMeta.fromJson(json['meta'] as Map<String, dynamic>)
           : null,
-      description: json['description'] as String?,
+      description: json['description'] != null
+          ? LocalizedString.fromJson(json['description'])
+          : null,
       imageUrl: json['imageUrl'] != null
-          ? ApiUrls.IMAGE_BASE_URL + json['imageUrl']
+          ? (json['imageUrl'].toString().contains('http')
+              ? json['imageUrl'].toString()
+              : ApiUrls.IMAGE_BASE_URL + json['imageUrl'].toString())
           : null,
       isActive: TypeParser.parseBool(json['isActive'], true),
       displayOrder: TypeParser.parseInt(json['displayOrder']),
@@ -45,11 +53,11 @@ class CategoryData {
 
   Map<String, dynamic> toJson() {
     return {
-      'categoryId': categoryId,
-      'name': name,
+      'id': id,
+      'name': name.toJson(),
       'organizationId': organizationId,
       'meta': meta?.toJson(),
-      'description': description,
+      'description': description?.toJson(),
       'imageUrl': imageUrl,
       'isActive': isActive,
       'displayOrder': displayOrder,
@@ -58,18 +66,18 @@ class CategoryData {
   }
 
   CategoryData copyWith({
-    String? categoryId,
-    String? name,
+    String? id,
+    LocalizedString? name,
     String? organizationId,
     EntityMeta? meta,
-    String? description,
+    LocalizedString? description,
     String? imageUrl,
     bool? isActive,
     int? displayOrder,
     int? productCount,
   }) {
     return CategoryData(
-      categoryId: categoryId ?? this.categoryId,
+      id: id ?? this.id,
       name: name ?? this.name,
       organizationId: organizationId ?? this.organizationId,
       meta: meta ?? this.meta,
@@ -83,6 +91,6 @@ class CategoryData {
 
   @override
   String toString() {
-    return 'CategoryData(categoryId: $categoryId, name: $name, organizationId: $organizationId, isActive: $isActive, productCount: $productCount)';
+    return 'CategoryData(id: $id, name: ${name.ar}, organizationId: $organizationId, isActive: $isActive, productCount: $productCount)';
   }
 }

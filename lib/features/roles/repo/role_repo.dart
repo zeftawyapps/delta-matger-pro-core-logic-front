@@ -1,9 +1,9 @@
 import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
-import 'package:matger_core_logic/core/auth/data/permission_model.dart';
-import 'package:matger_core_logic/features/roles/data/role_data_model.dart';
-import 'package:matger_core_logic/features/roles/source/role_source.dart';
+import 'package:matger_pro_core_logic/core/auth/data/permission_model.dart';
+import 'package:matger_pro_core_logic/features/roles/data/role_data_model.dart';
+import 'package:matger_pro_core_logic/features/roles/source/role_source.dart';
 
 class RoleRepo {
   late final RoleSource _roleSource;
@@ -64,7 +64,8 @@ class RoleRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: 'Parsing Error: $e',
+        message: result.error?.message ?? 'خطأ في جلب الصلاحيات',
+        data: null,
       );
     }
   }
@@ -117,7 +118,8 @@ class RoleRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: 'Parsing Error: $e',
+        message: result.error?.message ?? 'خطأ في فحص الصلاحية',
+        data: null,
       );
     }
   }
@@ -302,8 +304,8 @@ class RoleRepo {
       final raw = data is Map
           ? data as Map<String, dynamic>
           : (data is Map && data['data'] is Map)
-              ? data['data'] as Map<String, dynamic>
-              : <String, dynamic>{};
+          ? data['data'] as Map<String, dynamic>
+          : <String, dynamic>{};
       final role = RoleDataModel.fromJson(raw);
       JDRepoConsole.success(
         'Role parsed successfully in repo ($method)',
@@ -317,15 +319,13 @@ class RoleRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: 'Parsing Error: $e',
+        message: 'خطأ في معالجة بيانات الدور',
+        data: null,
       );
     }
   }
 
-  RemoteBaseModel<List<RoleDataModel>> _parseList(
-    dynamic data,
-    String method,
-  ) {
+  RemoteBaseModel<List<RoleDataModel>> _parseList(dynamic data, String method) {
     try {
       final List rawList;
       if (data is List) {
@@ -351,7 +351,8 @@ class RoleRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: 'Parsing Error: $e',
+        message: 'خطأ في عرض قائمة الأدوار',
+        data: null,
       );
     }
   }

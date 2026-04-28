@@ -1,5 +1,5 @@
 import 'package:JoDija_reposatory/utilis/models/base_data_model.dart';
-import 'package:matger_core_logic/utls/type_parser.dart';
+import 'package:matger_pro_core_logic/utls/type_parser.dart';
 
 class UserMeta {
   final String userId;

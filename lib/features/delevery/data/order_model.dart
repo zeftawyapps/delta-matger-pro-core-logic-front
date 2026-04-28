@@ -1,4 +1,4 @@
-import 'package:matger_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/models/entity_meta.dart';
 
 enum OrderStatus {
   pending,

@@ -1,8 +1,8 @@
 import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
-import 'package:matger_core_logic/core/auth/data/user_profile_model.dart';
-import 'package:matger_core_logic/features/users/source/user_source.dart';
+import 'package:matger_pro_core_logic/core/auth/data/user_profile_model.dart';
+import 'package:matger_pro_core_logic/features/users/source/user_source.dart';
 
 class UserRepo {
   late final UserSource _userSource;
@@ -117,7 +117,7 @@ class UserRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: 'Parsing Error: $e',
+        message: result.error?.message ?? 'خطأ في معالجة إحصائيات الحساب',
         data: null,
       );
     }
@@ -437,10 +437,7 @@ class UserRepo {
 
   // ─── Parsing Helpers ──────────────────────────────────────────────────────
 
-  RemoteBaseModel<UserProfileModel> _parseSingle(
-    dynamic data,
-    String method,
-  ) {
+  RemoteBaseModel<UserProfileModel> _parseSingle(dynamic data, String method) {
     try {
       final Map<String, dynamic> raw;
       if (data is Map<String, dynamic>) {
@@ -464,7 +461,7 @@ class UserRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: 'Parsing Error: $e',
+        message: 'خطأ في معالجة بيانات المستخدم',
         data: null,
       );
     }
@@ -499,7 +496,7 @@ class UserRepo {
       );
       return RemoteBaseModel(
         status: StatusModel.error,
-        message: 'Parsing Error: $e',
+        message: 'خطأ في عرض قائمة المستخدمين',
         data: null,
       );
     }

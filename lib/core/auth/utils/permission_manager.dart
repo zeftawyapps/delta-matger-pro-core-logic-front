@@ -1,4 +1,4 @@
-import 'package:matger_core_logic/core/auth/data/user_model.dart';
+import 'package:matger_pro_core_logic/core/auth/data/user_model.dart';
 import 'permission_constants.dart';
 
 /// A class to manage and check user permissions according to the backend structure: `feature:job`.
@@ -8,7 +8,11 @@ class PermissionManager {
   /// * The wildcard `*:*` grants all access.
   /// * The wildcard `feature:*` grants all actions for that feature.
   /// * Exact matches `feature:job` grant specific access.
-  static bool hasPermission(List<String>? userPermissions, String feature, String job) {
+  static bool hasPermission(
+    List<String>? userPermissions,
+    String feature,
+    String job,
+  ) {
     if (userPermissions == null || userPermissions.isEmpty) return false;
 
     // A "*" permission implies full access to everything.
@@ -47,7 +51,9 @@ extension UserPermissionExtension on UserModel {
   /// Check if the user can view a specific screen
   bool canView(String screenKey) {
     // Ensuring it uses screen. prefix if missing (optional step based on consistency)
-    final key = screenKey.startsWith('screen.') ? screenKey : 'screen.$screenKey';
+    final key = screenKey.startsWith('screen.')
+        ? screenKey
+        : 'screen.$screenKey';
     return can(key, SystemJobs.view);
   }
 }

@@ -5,7 +5,7 @@ import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/result/result.dart';
 import 'package:dio/dio.dart';
-import 'package:matger_core_logic/consts/end_points.dart';
+import 'package:matger_pro_core_logic/consts/end_points.dart';
 import 'package:JoDija_reposatory/utilis/functions/jd_repo_console.dart';
 
 class AuthSource {
@@ -119,6 +119,29 @@ class AuthSource {
     }
   }
 
+  Future<Result<RemoteBaseModel, dynamic>> changePassword({
+    required String identifier,
+    required String newPassword,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Attempting change password for: $identifier",
+        context: LogContext(module: "AuthSource", method: "changePassword"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.changePassword}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: {"identifier": identifier, "newPassword": newPassword},
+        cancelToken: CancelToken(),
+      );
+
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("changePassword", e);
+    }
+  }
+
   Result<RemoteBaseModel, dynamic> _wrap(
     Result<RemoteBaseModel, RemoteBaseModel> result,
   ) {
@@ -130,7 +153,8 @@ class AuthSource {
 
     if (result.data?.data is Map) {
       final dataMap = result.data?.data as Map;
-      final msg = dataMap['message'] ??
+      final msg =
+          dataMap['message'] ??
           dataMap['error'] ??
           dataMap['errors'] ??
           dataMap['detail'];
@@ -161,10 +185,11 @@ class AuthSource {
     String message = "حدث خطأ غير متوقع";
     dynamic errorData;
 
-    if (e is DioException) {
+    if (e is DioError) {
       errorData = e.response?.data;
       if (errorData is Map) {
-        final msg = errorData['message'] ??
+        final msg =
+            errorData['message'] ??
             errorData['error'] ??
             errorData['errors'] ??
             errorData['detail'];

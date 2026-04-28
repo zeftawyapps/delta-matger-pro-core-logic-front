@@ -1,4 +1,4 @@
-# matger_core_logic
+# matger_pro_core_logic
 
 A Flutter package containing all the Business Logic for the Matger platform.
 Works as a **shared package** across multiple Flutter projects, providing: Repositories, Data Sources, Models, and configuration utilities.
@@ -12,9 +12,9 @@ Works as a **shared package** across multiple Flutter projects, providing: Repos
 Call this at the very beginning of `main()` before anything else.
 
 ```dart
-import 'package:matger_core_logic/config/paoject_config.dart';
-import 'package:matger_core_logic/utls/storage/storage_helper.dart';
-import 'package:matger_core_logic/core/di/injection_container.dart';
+import 'package:matger_pro_core_logic/config/paoject_config.dart';
+import 'package:matger_pro_core_logic/utls/storage/storage_helper.dart';
+import 'package:matger_pro_core_logic/core/di/injection_container.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +40,7 @@ void main() async {
 After a successful login, inject the token into all future requests automatically.
 
 ```dart
-import 'package:matger_core_logic/config/paoject_config.dart';
+import 'package:matger_pro_core_logic/config/paoject_config.dart';
 
 ProjectAPIHeader.setToken(user.token);
 ProjectAPIHeader.setLanguage('en'); // or 'ar'
@@ -51,7 +51,7 @@ ProjectAPIHeader.setLanguage('en'); // or 'ar'
 After `initCoreLocator()`, access any repo anywhere in your app.
 
 ```dart
-import 'package:matger_core_logic/core/di/injection_container.dart';
+import 'package:matger_pro_core_logic/core/di/injection_container.dart';
 
 final authRepo   = sl<AuthRepo>();
 final orgRepo    = sl<OrganizationRepo>();
@@ -302,7 +302,7 @@ await sl<OrderRepo>().updateOrderStatus(orderId: id, status: 'confirmed');
 A `SharedPreferences` wrapper for managing tokens and persistent data.
 
 ```dart
-import 'package:matger_core_logic/utls/storage/storage_helper.dart';
+import 'package:matger_pro_core_logic/utls/storage/storage_helper.dart';
 
 // Token
 await StorageHelper.saveToken(token);
@@ -371,7 +371,7 @@ lib/
 ---
 ---
 
-# matger_core_logic — النسخة العربية
+# matger_pro_core_logic — النسخة العربية
 
 حزمة Flutter تحتوي على كل منطق الأعمال الخاص بمنصة Matger.
 تعمل كـ **shared package** بين مشاريع Flutter المتعددة، وتوفر: Repositories، Data Sources، Models، وأدوات التهيئة.
@@ -385,9 +385,9 @@ lib/
 استدعِها في أول سطر من `main()` قبل أي شيء آخر.
 
 ```dart
-import 'package:matger_core_logic/config/paoject_config.dart';
-import 'package:matger_core_logic/utls/storage/storage_helper.dart';
-import 'package:matger_core_logic/core/di/injection_container.dart';
+import 'package:matger_pro_core_logic/config/paoject_config.dart';
+import 'package:matger_pro_core_logic/utls/storage/storage_helper.dart';
+import 'package:matger_pro_core_logic/core/di/injection_container.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -413,7 +413,7 @@ void main() async {
 بعد نجاح الدخول، ضع الـ token في كل الطلبات القادمة تلقائياً.
 
 ```dart
-import 'package:matger_core_logic/config/paoject_config.dart';
+import 'package:matger_pro_core_logic/config/paoject_config.dart';
 
 ProjectAPIHeader.setToken(user.token);
 ProjectAPIHeader.setLanguage('ar'); // أو 'en'
@@ -424,7 +424,7 @@ ProjectAPIHeader.setLanguage('ar'); // أو 'en'
 بعد `initCoreLocator()` استخدم أي Repo في أي مكان بالتطبيق.
 
 ```dart
-import 'package:matger_core_logic/core/di/injection_container.dart';
+import 'package:matger_pro_core_logic/core/di/injection_container.dart';
 
 final authRepo   = sl<AuthRepo>();
 final orgRepo    = sl<OrganizationRepo>();
@@ -678,7 +678,7 @@ await sl<OrderRepo>().updateOrderStatus(orderId: id, status: 'confirmed');
 غلاف لـ `SharedPreferences` لإدارة الـ token والبيانات الدائمة.
 
 ```dart
-import 'package:matger_core_logic/utls/storage/storage_helper.dart';
+import 'package:matger_pro_core_logic/utls/storage/storage_helper.dart';
 
 // الـ Token
 await StorageHelper.saveToken(token);

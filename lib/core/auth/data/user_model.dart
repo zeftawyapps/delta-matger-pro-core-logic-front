@@ -1,5 +1,5 @@
 import 'package:JoDija_reposatory/constes/api_urls.dart';
-import 'package:matger_core_logic/models/entity_meta.dart';
+import 'package:matger_pro_core_logic/models/entity_meta.dart';
 
 class UserDataDetailsModel {
   final String userId;

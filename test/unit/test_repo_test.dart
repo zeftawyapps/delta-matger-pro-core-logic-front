@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:matger_core_logic/core/auth/repos/test_repo.dart';
-import 'package:matger_core_logic/core/auth/source/test_page_source.dart';
-import 'package:matger_core_logic/models/app_settings.dart';
+import 'package:matger_pro_core_logic/core/auth/repos/test_repo.dart';
+import 'package:matger_pro_core_logic/core/auth/source/test_page_source.dart';
+import 'package:matger_pro_core_logic/models/app_settings.dart';
 import 'package:JoDija_reposatory/utilis/models/remote_base_model.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 import 'package:JoDija_reposatory/utilis/result/result.dart';

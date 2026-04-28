@@ -45,7 +45,9 @@ class OrganizationConfig {
 
   ManagementFeaturesConfig? get feature {
     if (features == null || features!['feature'] == null) return null;
-    return ManagementFeaturesConfig.fromJson(Map<String, dynamic>.from(features!['feature']));
+    return ManagementFeaturesConfig.fromJson(
+      Map<String, dynamic>.from(features!['feature']),
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -56,7 +58,8 @@ class OrganizationConfig {
       if (layout != null) 'layout': layout!.toJson(),
       if (systemLicense != null) 'systemLicense': systemLicense!.toJson(),
       if (features != null) 'features': features,
-      if (productInput != null) 'productInput': productInput, // 🟢 إرسال الحقل الجديد
+      if (productInput != null)
+        'productInput': productInput, // 🟢 إرسال الحقل الجديد
     };
   }
 }
@@ -467,27 +470,31 @@ class SystemLicenseConfig {
 }
 
 class ManagementFeaturesConfig {
-  final ScreenFeatureConfig? categories;
-  final ScreenFeatureConfig? products;
-  final ScreenFeatureConfig? users;
+  final Map<String, ScreenFeatureConfig> configs;
 
-  ManagementFeaturesConfig({this.categories, this.products, this.users});
+  ManagementFeaturesConfig({
+    required this.configs,
+  });
 
   factory ManagementFeaturesConfig.fromJson(Map<String, dynamic> json) {
-    return ManagementFeaturesConfig(
-      categories: json['categories'] != null ? ScreenFeatureConfig.fromJson(Map<String, dynamic>.from(json['categories'])) : null,
-      products: json['products'] != null ? ScreenFeatureConfig.fromJson(Map<String, dynamic>.from(json['products'])) : null,
-      users: json['users'] != null ? ScreenFeatureConfig.fromJson(Map<String, dynamic>.from(json['users'])) : null,
-    );
+    final Map<String, ScreenFeatureConfig> configs = {};
+    json.forEach((key, value) {
+      if (value is Map<String, dynamic>) {
+        configs[key] = ScreenFeatureConfig.fromJson(value);
+      }
+    });
+    return ManagementFeaturesConfig(configs: configs);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      if (categories != null) 'categories': categories!.toJson(),
-      if (products != null) 'products': products!.toJson(),
-      if (users != null) 'users': users!.toJson(),
-    };
+    return configs.map((key, value) => MapEntry(key, value.toJson()));
   }
+
+  // 🟢 Getters for backward compatibility
+  ScreenFeatureConfig? get categories => configs['categories'];
+  ScreenFeatureConfig? get products => configs['products'];
+  ScreenFeatureConfig? get users => configs['users'];
+  ScreenFeatureConfig? get offers => configs['offers'];
 }
 
 class ScreenFeatureConfig {
@@ -501,6 +508,7 @@ class ScreenFeatureConfig {
   final int? debounceMs;
   final bool? canAdd;
   final bool? shrinkWrap;
+  final bool? showAddInGrid; // 🟢 الحقل الجديد
 
   ScreenFeatureConfig({
     this.childAspectRatio,
@@ -513,6 +521,7 @@ class ScreenFeatureConfig {
     this.debounceMs,
     this.canAdd,
     this.shrinkWrap,
+    this.showAddInGrid, // 🟢 إضافة للـ constructor
   });
 
   factory ScreenFeatureConfig.fromJson(Map<String, dynamic> json) {
@@ -523,25 +532,32 @@ class ScreenFeatureConfig {
       crossAxisCountLarge: json['crossAxisCountLarge'],
       crossAxisSpacing: json['crossAxisSpacing']?.toDouble(),
       mainAxisSpacing: json['mainAxisSpacing']?.toDouble(),
-      padding: json['padding'] != null ? List<double>.from(json['padding']) : null,
+      padding: json['padding'] != null
+          ? List<double>.from(json['padding'])
+          : null,
       debounceMs: json['debounceMs'],
       canAdd: json['canAdd'],
       shrinkWrap: json['shrinkWrap'],
+      showAddInGrid: json['showAddInGrid'], // 🟢 قراءة الحقل الجديد
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       if (childAspectRatio != null) 'childAspectRatio': childAspectRatio,
-      if (crossAxisCountSmall != null) 'crossAxisCountSmall': crossAxisCountSmall,
-      if (crossAxisCountMedium != null) 'crossAxisCountMedium': crossAxisCountMedium,
-      if (crossAxisCountLarge != null) 'crossAxisCountLarge': crossAxisCountLarge,
+      if (crossAxisCountSmall != null)
+        'crossAxisCountSmall': crossAxisCountSmall,
+      if (crossAxisCountMedium != null)
+        'crossAxisCountMedium': crossAxisCountMedium,
+      if (crossAxisCountLarge != null)
+        'crossAxisCountLarge': crossAxisCountLarge,
       if (crossAxisSpacing != null) 'crossAxisSpacing': crossAxisSpacing,
       if (mainAxisSpacing != null) 'mainAxisSpacing': mainAxisSpacing,
       if (padding != null) 'padding': padding,
       if (debounceMs != null) 'debounceMs': debounceMs,
       if (canAdd != null) 'canAdd': canAdd,
       if (shrinkWrap != null) 'shrinkWrap': shrinkWrap,
+      if (showAddInGrid != null) 'showAddInGrid': showAddInGrid, // 🟢 إرسال الحقل الجديد
     };
   }
 }

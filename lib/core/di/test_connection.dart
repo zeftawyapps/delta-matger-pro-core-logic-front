@@ -1,5 +1,5 @@
-import 'package:matger_core_logic/core/di/injection_container.dart';
-import 'package:matger_core_logic/core/auth/repos/auth_repo.dart';
+import 'package:matger_pro_core_logic/core/di/injection_container.dart';
+import 'package:matger_pro_core_logic/core/auth/repos/auth_repo.dart';
 import 'package:JoDija_reposatory/utilis/models/staus_model.dart';
 
 /// ملف مخصص لاختبار الاتصال بالباك إند (API) بدون الحاجة لواجهة مستخدم (UI)
