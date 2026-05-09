@@ -76,18 +76,21 @@ Future<void> initCoreLocator() async {
     () => OrganizationRepo(organizationSource: sl()),
   );
 
+  sl.registerLazySingleton<WorkflowRepo>(
+    () => WorkflowRepo(source: sl()),
+  );
+
   // Commerce Repos
   sl.registerLazySingleton<CategoryRepo>(
     () => CategoryRepo(categorySource: sl()),
   );
-  sl.registerLazySingleton<OrderRepo>(() => OrderRepo(orderSource: sl()));
+  sl.registerLazySingleton<OrderRepo>(
+    () => OrderRepo(orderSource: sl(), workflowRepo: sl()),
+  );
   sl.registerLazySingleton<ProductRepo>(() => ProductRepo(productSource: sl()));
   sl.registerLazySingleton<OfferRepo>(() => OfferRepo(offerSource: sl()));
   sl.registerLazySingleton<LocationRepo>(
     () => LocationRepo(locationSource: sl()),
-  );
-  sl.registerLazySingleton<WorkflowRepo>(
-    () => WorkflowRepo(source: sl()),
   );
 
   // Roles & Users Sources

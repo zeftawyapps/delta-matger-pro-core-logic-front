@@ -229,6 +229,30 @@ class WorkflowSource {
     }
   }
 
+  Future<Result<RemoteBaseModel, dynamic>> getWorkflowTemplate({
+    required String slug,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching workflow template for slug: $slug",
+        context: LogContext(module: "WorkflowSource", method: "getWorkflowTemplate"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.workflowTemplate(slug)}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getWorkflowTemplate", e);
+    }
+  }
+
   Result<RemoteBaseModel, dynamic> _wrap(
     Result<RemoteBaseModel, RemoteBaseModel> result,
   ) {

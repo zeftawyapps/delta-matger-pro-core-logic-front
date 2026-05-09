@@ -9,13 +9,14 @@ class WorkflowRepo {
   final WorkflowSource _source;
   WorkflowRepo({WorkflowSource? source}) : _source = source ?? WorkflowSource();
 
-  Future<RemoteBaseModel<WorkflowConfig>> performAction({
+  Future<RemoteBaseModel<T>> performAction<T>({
     required String entityType,
     required String entryId,
     required WorkflowExecuteActionRequest request,
+    T Function(Map<String, dynamic>)? parser,
   }) async {
     JDRepoConsole.info(
-      "Performing workflow action: ${request.actionName}",
+      "Performing workflow action: ${request.actionName} for $entityType",
       context: LogContext(module: "WorkflowRepo", method: "performAction"),
     );
     final result = await _source.performWorkflowAction(
@@ -40,32 +41,39 @@ class WorkflowRepo {
       final data = (rawData.containsKey('data') && rawData['data'] is Map)
           ? rawData['data'] as Map<String, dynamic>
           : rawData;
+      
+      if (parser != null) {
+        final parsedData = parser(data);
+        JDRepoConsole.success(
+          "Workflow action result parsed successfully",
+          context: LogContext(module: "WorkflowRepo", method: "performAction"),
+        );
+        return RemoteBaseModel(data: parsedData, status: StatusModel.success);
+      }
+      
+      // Default fallback for backward compatibility
       final config = WorkflowConfig.fromJson(data);
       JDRepoConsole.success(
-        "Workflow action performed and results parsed successfully",
+        "Workflow config parsed successfully after action",
         context: LogContext(module: "WorkflowRepo", method: "performAction"),
       );
-      return RemoteBaseModel(data: config, status: StatusModel.success);
+      return RemoteBaseModel(data: config as T, status: StatusModel.success);
     } catch (e) {
       JDRepoConsole.error(
         "Parsing error in performAction: $e",
-        context: LogContext(
-          module: "WorkflowRepo",
-          method: "performAction",
-          metadata: result.data,
-        ),
+        context: LogContext(module: "WorkflowRepo", method: "performAction"),
       );
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message ?? "خطأ في تنفيذ إجراء سير العمل",
-        data: null,
       );
     }
   }
 
-  Future<RemoteBaseModel<WorkflowConfig>> getStatus({
+  Future<RemoteBaseModel<T>> getStatus<T>({
     required String entityType,
     required String entryId,
+    T Function(Map<String, dynamic>)? parser,
   }) async {
     JDRepoConsole.info(
       "Getting workflow status for $entityType: $entryId",
@@ -92,33 +100,39 @@ class WorkflowRepo {
       final data = (rawData.containsKey('data') && rawData['data'] is Map)
           ? rawData['data'] as Map<String, dynamic>
           : rawData;
+      
+      if (parser != null) {
+        final parsedData = parser(data);
+        JDRepoConsole.success(
+          "Workflow status parsed successfully",
+          context: LogContext(module: "WorkflowRepo", method: "getStatus"),
+        );
+        return RemoteBaseModel(data: parsedData, status: StatusModel.success);
+      }
+
       final config = WorkflowConfig.fromJson(data);
       JDRepoConsole.success(
-        "Workflow status fetched successfully",
+        "Workflow config parsed successfully for status",
         context: LogContext(module: "WorkflowRepo", method: "getStatus"),
       );
-      return RemoteBaseModel(data: config, status: StatusModel.success);
+      return RemoteBaseModel(data: config as T, status: StatusModel.success);
     } catch (e) {
       JDRepoConsole.error(
         "Parsing error in getStatus: $e",
-        context: LogContext(
-          module: "WorkflowRepo",
-          method: "getStatus",
-          metadata: result.data,
-        ),
+        context: LogContext(module: "WorkflowRepo", method: "getStatus"),
       );
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message ?? "خطأ في جلب حالة سير العمل",
-        data: null,
       );
     }
   }
 
-  Future<RemoteBaseModel<WorkflowConfig>> claimTask({
+  Future<RemoteBaseModel<T>> claimTask<T>({
     required String entityType,
     required String entryId,
     WorkflowClaimTaskRequest? request,
+    T Function(Map<String, dynamic>)? parser,
   }) async {
     JDRepoConsole.info(
       "Claiming workflow task for $entityType: $entryId",
@@ -146,33 +160,39 @@ class WorkflowRepo {
       final data = (rawData.containsKey('data') && rawData['data'] is Map)
           ? rawData['data'] as Map<String, dynamic>
           : rawData;
+      
+      if (parser != null) {
+        final parsedData = parser(data);
+        JDRepoConsole.success(
+          "Claim task result parsed successfully",
+          context: LogContext(module: "WorkflowRepo", method: "claimTask"),
+        );
+        return RemoteBaseModel(data: parsedData, status: StatusModel.success);
+      }
+
       final config = WorkflowConfig.fromJson(data);
       JDRepoConsole.success(
-        "Workflow task claimed successfully",
+        "Workflow config parsed successfully after claim",
         context: LogContext(module: "WorkflowRepo", method: "claimTask"),
       );
-      return RemoteBaseModel(data: config, status: StatusModel.success);
+      return RemoteBaseModel(data: config as T, status: StatusModel.success);
     } catch (e) {
       JDRepoConsole.error(
         "Parsing error in claimTask: $e",
-        context: LogContext(
-          module: "WorkflowRepo",
-          method: "claimTask",
-          metadata: result.data,
-        ),
+        context: LogContext(module: "WorkflowRepo", method: "claimTask"),
       );
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message ?? "خطأ في استلام المهمة",
-        data: null,
       );
     }
   }
 
-  Future<RemoteBaseModel<WorkflowConfig>> assignTask({
+  Future<RemoteBaseModel<T>> assignTask<T>({
     required String entityType,
     required String entryId,
     required WorkflowAssignTaskRequest request,
+    T Function(Map<String, dynamic>)? parser,
   }) async {
     JDRepoConsole.info(
       "Assigning workflow task for $entityType: $entryId to ${request.targetUserId}",
@@ -200,25 +220,30 @@ class WorkflowRepo {
       final data = (rawData.containsKey('data') && rawData['data'] is Map)
           ? rawData['data'] as Map<String, dynamic>
           : rawData;
+      
+      if (parser != null) {
+        final parsedData = parser(data);
+        JDRepoConsole.success(
+          "Assign task result parsed successfully",
+          context: LogContext(module: "WorkflowRepo", method: "assignTask"),
+        );
+        return RemoteBaseModel(data: parsedData, status: StatusModel.success);
+      }
+
       final config = WorkflowConfig.fromJson(data);
       JDRepoConsole.success(
-        "Workflow task assigned successfully",
+        "Workflow config parsed successfully after assignment",
         context: LogContext(module: "WorkflowRepo", method: "assignTask"),
       );
-      return RemoteBaseModel(data: config, status: StatusModel.success);
+      return RemoteBaseModel(data: config as T, status: StatusModel.success);
     } catch (e) {
       JDRepoConsole.error(
         "Parsing error in assignTask: $e",
-        context: LogContext(
-          module: "WorkflowRepo",
-          method: "assignTask",
-          metadata: result.data,
-        ),
+        context: LogContext(module: "WorkflowRepo", method: "assignTask"),
       );
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message ?? "خطأ في تعيين المهمة",
-        data: null,
       );
     }
   }
@@ -398,6 +423,59 @@ class WorkflowRepo {
         status: StatusModel.error,
         message: result.error?.message ?? "خطأ في حفظ إعدادات سير العمل",
         data: null,
+      );
+    }
+  }
+  Future<RemoteBaseModel<WorkflowData>> getTemplate({
+    required String slug,
+  }) async {
+    return getWorkflowTemplate<WorkflowData>(
+      slug: slug,
+      parser: (data) => WorkflowData.fromJson(data),
+    );
+  }
+
+  Future<RemoteBaseModel<T>> getWorkflowTemplate<T>({
+    required String slug,
+    required T Function(Map<String, dynamic>) parser,
+  }) async {
+    JDRepoConsole.info(
+      "Fetching workflow template for slug: $slug",
+      context: LogContext(module: "WorkflowRepo", method: "getWorkflowTemplate"),
+    );
+    final result = await _source.getWorkflowTemplate(slug: slug);
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in getWorkflowTemplate for slug $slug: ${result.error?.message}",
+        context: LogContext(module: "WorkflowRepo", method: "getWorkflowTemplate"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+      );
+    }
+
+    try {
+      final data = result.data as Map<String, dynamic>;
+      // Extract data object if nested
+      final finalData = (data.containsKey('data') && data['data'] is Map)
+          ? data['data'] as Map<String, dynamic>
+          : data;
+      final parsedData = parser(finalData);
+      JDRepoConsole.success(
+        "Workflow template for slug $slug parsed successfully",
+        context: LogContext(module: "WorkflowRepo", method: "getWorkflowTemplate"),
+      );
+      return RemoteBaseModel(data: parsedData, status: StatusModel.success);
+    } catch (e) {
+      JDRepoConsole.error(
+        "Parsing error in getWorkflowTemplate for slug $slug: $e",
+        context: LogContext(module: "WorkflowRepo", method: "getWorkflowTemplate"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message ?? "خطأ في جلب قالب سير العمل",
       );
     }
   }

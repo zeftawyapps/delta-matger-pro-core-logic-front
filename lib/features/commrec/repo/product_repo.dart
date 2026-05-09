@@ -230,6 +230,79 @@ class ProductRepo {
     }
   }
 
+  Future<RemoteBaseModel<List<ProductData>>> getDiscountedProducts() async {
+    JDRepoConsole.info(
+      "Searching discounted products in repo",
+      context: LogContext(
+        module: "ProductRepo",
+        method: "getDiscountedProducts",
+      ),
+    );
+    final result = await _productSource.getDiscountedProducts();
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in getDiscountedProducts: ${result.error?.message}",
+        context: LogContext(
+          module: "ProductRepo",
+          method: "getDiscountedProducts",
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+      );
+    }
+
+    try {
+      final rawData = result.data;
+      final List productsList;
+
+      if (rawData is List) {
+        productsList = rawData;
+      } else if (rawData is Map) {
+        final data = (rawData.containsKey('data') && rawData['data'] is List)
+            ? rawData['data'] as List
+            : (rawData.containsKey('products') && rawData['products'] is List)
+            ? rawData['products'] as List
+            : (rawData.containsKey('data') &&
+                  rawData['data'] is Map &&
+                  rawData['data']['products'] is List)
+            ? rawData['data']['products'] as List
+            : [];
+        productsList = data;
+      } else {
+        productsList = [];
+      }
+
+      final products = productsList
+          .map((e) => ProductData.fromJson(e as Map<String, dynamic>))
+          .toList();
+      JDRepoConsole.success(
+        "Found ${products.length} discounted products successfully",
+        context: LogContext(
+          module: "ProductRepo",
+          method: "getDiscountedProducts",
+        ),
+      );
+      return RemoteBaseModel(data: products, status: StatusModel.success);
+    } catch (e) {
+      JDRepoConsole.error(
+        "Parsing error in getDiscountedProducts: $e",
+        context: LogContext(
+          module: "ProductRepo",
+          method: "getDiscountedProducts",
+          metadata: result.data,
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message ?? "خطأ في عرض المنتجات المخفضة",
+        data: null,
+      );
+    }
+  }
+
   Future<RemoteBaseModel<List<ProductData>>> getProductsByCategory({
     required String categoryId,
     int page = 1,
@@ -237,8 +310,10 @@ class ProductRepo {
   }) async {
     JDRepoConsole.info(
       "Getting products by category in repo: $categoryId - page: $page",
-      context:
-          LogContext(module: "ProductRepo", method: "getProductsByCategory"),
+      context: LogContext(
+        module: "ProductRepo",
+        method: "getProductsByCategory",
+      ),
     );
     final result = await _productSource.getProductsByCategory(
       categoryId: categoryId,
@@ -249,8 +324,10 @@ class ProductRepo {
     if (result.error != null) {
       JDRepoConsole.error(
         "Source error in getProductsByCategory: ${result.error?.message}",
-        context:
-            LogContext(module: "ProductRepo", method: "getProductsByCategory"),
+        context: LogContext(
+          module: "ProductRepo",
+          method: "getProductsByCategory",
+        ),
       );
       return RemoteBaseModel(
         status: StatusModel.error,
@@ -284,8 +361,10 @@ class ProductRepo {
           .toList();
       JDRepoConsole.success(
         "Fetched ${products.length} products successfully for category: $categoryId",
-        context:
-            LogContext(module: "ProductRepo", method: "getProductsByCategory"),
+        context: LogContext(
+          module: "ProductRepo",
+          method: "getProductsByCategory",
+        ),
       );
       return RemoteBaseModel(data: products, status: StatusModel.success);
     } catch (e) {

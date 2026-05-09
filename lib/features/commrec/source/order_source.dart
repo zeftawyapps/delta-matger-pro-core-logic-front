@@ -13,11 +13,13 @@ class OrderSource {
 
   Future<Result<RemoteBaseModel, dynamic>> createOrder({
     required String organizationId,
-    required Map<String, dynamic> senderDetails,
-    required Map<String, dynamic> recipientDetails,
+    Map<String, dynamic>? senderDetails,
+    Map<String, dynamic>? recipientDetails,
     required List<Map<String, dynamic>> items,
     required double totalOrderPrice,
     String orderMode = 'C2B',
+    String? workflowSlug,
+    int calculationMode = 2,
     Map<String, dynamic>? additionalData,
   }) async {
     try {
@@ -26,11 +28,16 @@ class OrderSource {
         context: LogContext(module: "OrderSource", method: "createOrder"),
       );
       String url = "${ApiUrls.BASE_URL}${EndPoints.ordersByOrg(organizationId)}";
-      final body = {
-        "senderDetails": senderDetails,
-        "recipientDetails": recipientDetails,
-        "totalOrderPrice": totalOrderPrice,
+      final queryParameters = {
+        if (workflowSlug != null) "workflowSlug": workflowSlug,
+        "allowDefaultWorkflow": true,
+        "calculationMode": calculationMode,
         "orderMode": orderMode,
+      };
+      final body = {
+        if (senderDetails != null) "senderDetails": senderDetails,
+        if (recipientDetails != null) "recipientDetails": recipientDetails,
+        "totalOrderPrice": totalOrderPrice,
         "items": items,
         if (additionalData != null) ...additionalData,
       };
@@ -38,6 +45,7 @@ class OrderSource {
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.POST,
         url: url,
+        queryParameters: queryParameters,
         body: body,
         cancelToken: CancelToken(),
       );
@@ -47,43 +55,67 @@ class OrderSource {
     }
   }
 
-  Future<Result<RemoteBaseModel, dynamic>> trackOrderStatus(String orderId) async {
+  Future<Result<RemoteBaseModel, dynamic>> updateOrderItems({
+    required String orderId,
+    required List<Map<String, dynamic>> items,
+    required double totalOrderPrice,
+    int calculationMode = 2,
+  }) async {
     try {
       JDRepoConsole.info(
-        "Tracking status for order: $orderId",
-        context: LogContext(module: "OrderSource", method: "trackOrderStatus"),
+        "Updating items for order: $orderId",
+        context: LogContext(module: "OrderSource", method: "updateOrderItems"),
       );
-      String url = "${ApiUrls.BASE_URL}${EndPoints.trackingOrderStatus(orderId)}";
-      final result = await HttpClient(userToken: true).sendRequest(
-        method: HttpMethod.GET,
-        url: url,
-        cancelToken: CancelToken(),
-      );
-      return _wrap(result);
-    } catch (e) {
-      return _catchError("trackOrderStatus", e);
-    }
-  }
+      String url = "${ApiUrls.BASE_URL}${EndPoints.orderById(orderId)}";
+      final queryParameters = {
+        "calculationMode": calculationMode,
+      };
+      final body = {
+        "items": items,
+        "totalOrderPrice": totalOrderPrice,
+      };
 
-  Future<Result<RemoteBaseModel, dynamic>> performWorkflowAction(
-    String orderId,
-    Map<String, dynamic> actionData,
-  ) async {
-    try {
-      JDRepoConsole.info(
-        "Performing workflow action for order: $orderId",
-        context: LogContext(module: "OrderSource", method: "performWorkflowAction"),
-      );
-      String url = "${ApiUrls.BASE_URL}${EndPoints.performWorkflowAction('orders', orderId)}";
       final result = await HttpClient(userToken: true).sendRequest(
         method: HttpMethod.PUT,
         url: url,
-        body: actionData,
+        queryParameters: queryParameters,
+        body: body,
         cancelToken: CancelToken(),
       );
       return _wrap(result);
     } catch (e) {
-      return _catchError("performWorkflowAction", e);
+      return _catchError("updateOrderItems", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getOrganizationOrders({
+    int page = 1,
+    int limit = 10,
+    int? currentStepIndex,
+    String? workflowSlug,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching organization orders - Page: $page, Limit: $limit, WorkflowSlug: $workflowSlug, StepIndex: $currentStepIndex",
+        context: LogContext(module: "OrderSource", method: "getOrganizationOrders"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.ordersOrganization}";
+      final queryParameters = {
+        "page": page,
+        "limit": limit,
+        if (currentStepIndex != null) "currentStepIndex": currentStepIndex,
+        if (workflowSlug != null) "workflowSlug": workflowSlug,
+      };
+
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        queryParameters: queryParameters,
+        cancelToken: CancelToken(),
+      );
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getOrganizationOrders", e);
     }
   }
 

@@ -27,7 +27,8 @@ class EntityMeta extends BaseEntityDataModel {
   final DateTime updatedAt;
   final bool isActive;
   final DateTime? deletedAt;
-  final UserMeta? user;
+  final UserMeta? createdBy;
+  final UserMeta? updatedBy;
 
   EntityMeta({
     required this.id,
@@ -35,7 +36,8 @@ class EntityMeta extends BaseEntityDataModel {
     required this.updatedAt,
     required this.isActive,
     this.deletedAt,
-    this.user,
+    this.createdBy,
+    this.updatedBy,
   });
 
   factory EntityMeta.fromJson(Map<String, dynamic> json) {
@@ -51,7 +53,8 @@ class EntityMeta extends BaseEntityDataModel {
       deletedAt: json['deletedAt'] != null
           ? DateTime.tryParse(json['deletedAt'].toString())
           : null,
-      user: json['user'] != null ? UserMeta.fromJson(json['user']) : null,
+      createdBy: json['createdBy'] != null ? UserMeta.fromJson(json['createdBy']) : null,
+      updatedBy: json['updatedBy'] != null ? UserMeta.fromJson(json['updatedBy']) : null,
     );
   }
 
@@ -62,7 +65,8 @@ class EntityMeta extends BaseEntityDataModel {
       'updatedAt': updatedAt.toIso8601String(),
       'isActive': isActive,
       'deletedAt': deletedAt?.toIso8601String(),
-      'user': user?.toJson(),
+      'createdBy': createdBy?.toJson(),
+      'updatedBy': updatedBy?.toJson(),
     };
   }
 }

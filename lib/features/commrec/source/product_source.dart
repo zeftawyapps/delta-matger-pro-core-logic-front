@@ -167,6 +167,42 @@ class ProductSource {
     }
   }
 
+  Future<Result<RemoteBaseModel, dynamic>> getDiscountedProducts() async {
+    try {
+      JDRepoConsole.info(
+        "Searching discounted products",
+        context: LogContext(
+          module: "ProductSource",
+          method: "getDiscountedProducts",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.discountedProducts}";
+      List<String> params = [];
+
+      if (params.isNotEmpty) url += "?${params.join("&")}";
+
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Discounted products search completed",
+          context: LogContext(
+            module: "ProductSource",
+            method: "getDiscountedProducts",
+          ),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getDiscountedProducts", e);
+    }
+  }
+
   Future<Result<RemoteBaseModel, dynamic>> getProductsByCategory({
     required String categoryId,
     int page = 1,
@@ -175,8 +211,10 @@ class ProductSource {
     try {
       JDRepoConsole.info(
         "Fetching products for category: $categoryId - page: $page, limit: $limit",
-        context:
-            LogContext(module: "ProductSource", method: "getProductsByCategory"),
+        context: LogContext(
+          module: "ProductSource",
+          method: "getProductsByCategory",
+        ),
       );
       String url =
           "${ApiUrls.BASE_URL}${EndPoints.productsByCategory(categoryId)}?page=$page&limit=$limit";

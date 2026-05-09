@@ -141,6 +141,7 @@ class WorkflowStep {
   final String targetType;
   final int requiredApprovalsCount;
   final String statusTag;
+  final bool ableToEditOrderItems;
   final List<WorkflowAction> actions;
 
   WorkflowStep({
@@ -154,13 +155,14 @@ class WorkflowStep {
     required this.targetType,
     required this.requiredApprovalsCount,
     required this.statusTag,
+    this.ableToEditOrderItems = false,
     required this.actions,
   });
 
   factory WorkflowStep.fromJson(Map<String, dynamic> json) {
     return WorkflowStep(
-      id: json['_id'] as String? ?? '',
-      stepKey: json['stepKey'] as String? ?? '',
+      id: json['_id'] as String? ?? json['id'] as String? ?? '',
+      stepKey: (json['stepKey'] ?? '').toString(),
       stepNumber: json['stepNumber'] as int? ?? 0,
       stepName: LocalizedString.fromJson(json['stepName']),
       stepRole: json['stepRole'] as String? ?? '',
@@ -169,6 +171,7 @@ class WorkflowStep {
       targetType: json['targetType'] as String? ?? 'user',
       requiredApprovalsCount: json['requiredApprovalsCount'] as int? ?? 1,
       statusTag: json['statusTag'] as String? ?? '',
+      ableToEditOrderItems: json['ableToEditOrderItems'] == true,
       actions: (json['action'] as List? ?? json['actions'] as List? ?? [])
           .map((e) => WorkflowAction.fromJson(e as Map<String, dynamic>))
           .toList()
@@ -188,6 +191,7 @@ class WorkflowStep {
       'targetType': targetType,
       'requiredApprovalsCount': requiredApprovalsCount,
       'statusTag': statusTag,
+      'ableToEditOrderItems': ableToEditOrderItems,
       'action': actions.map((e) => e.toJson()).toList(),
     };
   }

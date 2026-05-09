@@ -239,6 +239,7 @@ class UserRepo {
     String? phone,
     String? address,
     bool? isActive,
+    List<String>? roles,
     Map<String, dynamic>? additionalFields,
   }) async {
     JDRepoConsole.info(
@@ -252,6 +253,7 @@ class UserRepo {
       phone: phone,
       address: address,
       isActive: isActive,
+      roles: roles,
       additionalFields: additionalFields,
     );
 

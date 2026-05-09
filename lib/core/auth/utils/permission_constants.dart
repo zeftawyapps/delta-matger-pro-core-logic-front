@@ -61,6 +61,7 @@ class SystemJobs {
   static const String stream = 'stream';
   static const String admin = 'admin';
   static const String workflowAction = 'workflowAction';
+  static const String workflowAssigner = 'workflowAssigner';
   static const String view = 'view';
 
   static const Map<String, Map<String, String>> translations = {
@@ -73,6 +74,7 @@ class SystemJobs {
     stream: {'ar': 'متابعة حية', 'en': 'Live Stream'},
     admin: {'ar': 'صلاحية أدمن', 'en': 'Admin Access'},
     workflowAction: {'ar': 'إجراءات سير العمل', 'en': 'Workflow Actions'},
+    workflowAssigner: {'ar': 'تعيين المهام', 'en': 'Task Assignment'},
     view: {'ar': 'دخول الشاشة (لـ Screens)', 'en': 'Enter Screen (for Screens)'},
   };
 }

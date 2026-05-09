@@ -15,6 +15,7 @@ class EndPoints {
   // Products
   static const String products = "/products";
   static const String searchProducts = "/products/search";
+  static const String discountedProducts = "/products/search/discounted";
   static String productById(String productId) => "/products/$productId";
   static String productsByCategory(String categoryId) =>
       "/products/category/$categoryId";
@@ -73,6 +74,7 @@ class EndPoints {
   static const String orders = "/orders";
   static String orderById(String orderId) => "/orders/$orderId";
   static String ordersByOrg(String organizationId) => "/orders/$organizationId";
+  static const String ordersOrganization = "/orders/organization";
   static String shopOrders(String shopId) => "/orders/shop/$shopId";
   static String updateOrderStatus(String orderId) => "/orders/$orderId/status";
 
@@ -99,6 +101,7 @@ class EndPoints {
       "/workflow/config/$orgId/delete-step/$stepNumber";
   static String seedWorkflowConfig(String orgId) =>
       "/workflow/config/$orgId/seed";
+  static String workflowTemplate(String slug) => "/workflow/template/$slug";
 
   // Workflow (Old compat? from documentation)
   static String trackingOrderStatus(String orderId) =>

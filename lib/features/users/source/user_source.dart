@@ -195,6 +195,7 @@ class UserSource {
     String? phone,
     String? address,
     bool? isActive,
+    List<String>? roles,
     Map<String, dynamic>? additionalFields,
   }) async {
     try {
@@ -212,6 +213,7 @@ class UserSource {
           if (phone != null) 'phone': phone,
           if (address != null) 'address': address,
           if (isActive != null) 'isActive': isActive,
+          if (roles != null) 'roles': roles,
           if (additionalFields != null) ...additionalFields,
         },
         cancelToken: CancelToken(),
