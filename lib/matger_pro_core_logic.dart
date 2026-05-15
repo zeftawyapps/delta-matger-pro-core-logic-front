@@ -37,3 +37,8 @@ export 'features/workflow/repo/workflow_repo.dart';
 export 'features/workflow/request_body/workflow_request_bodies.dart';
 export 'features/workflow/source/workflow_source.dart';
 export 'features/workflow/workflow_constants.dart';
+
+// Order Paths
+export 'features/order_path/data/order_path_model.dart';
+export 'features/order_path/source/order_path_source.dart';
+export 'features/order_path/repo/order_path_repo.dart';

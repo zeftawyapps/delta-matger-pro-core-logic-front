@@ -24,7 +24,9 @@ class OrderRepo {
     required double totalOrderPrice,
     String orderMode = 'C2B',
     String? workflowSlug,
+    String? senderOrganizationId,
     int calculationMode = 2,
+    Map<String, double>? additionalCalculation,
     Map<String, dynamic>? additionalData,
   }) async {
     JDRepoConsole.info(
@@ -39,7 +41,9 @@ class OrderRepo {
       orderMode: orderMode,
       items: items.map((e) => e.toJson()).toList(),
       workflowSlug: workflowSlug,
+      senderOrganizationId: senderOrganizationId,
       calculationMode: calculationMode,
+      additionalCalculation: additionalCalculation,
       additionalData: additionalData,
     );
 

@@ -5,7 +5,8 @@ class OrganizationConfig {
   final LayoutConfig? layout;
   final SystemLicenseConfig? systemLicense;
   final Map<String, dynamic>? features;
-  final Map<String, dynamic>? productInput; // 🟢 الحقل الجديد
+  final Map<String, dynamic>? productInput;
+  final Map<String, dynamic>? b2bHomeLayout; // 🟢 الحقل الجديد لتخطيط الصفحة الرئيسية
 
   OrganizationConfig({
     required this.id,
@@ -14,7 +15,8 @@ class OrganizationConfig {
     this.layout,
     this.systemLicense,
     this.features,
-    this.productInput, // 🟢 إضافة للـ constructor
+    this.productInput,
+    this.b2bHomeLayout, // 🟢 إضافة للـ constructor
   });
 
   factory OrganizationConfig.fromJson(Map<String, dynamic> json) {
@@ -39,6 +41,9 @@ class OrganizationConfig {
           : null,
       productInput: json['productInput'] != null
           ? Map<String, dynamic>.from(json['productInput'])
+          : null,
+      b2bHomeLayout: json['b2bHomeLayout'] != null
+          ? Map<String, dynamic>.from(json['b2bHomeLayout'])
           : null, // 🟢 قراءة الحقل الجديد
     );
   }
@@ -58,8 +63,8 @@ class OrganizationConfig {
       if (layout != null) 'layout': layout!.toJson(),
       if (systemLicense != null) 'systemLicense': systemLicense!.toJson(),
       if (features != null) 'features': features,
-      if (productInput != null)
-        'productInput': productInput, // 🟢 إرسال الحقل الجديد
+      if (productInput != null) 'productInput': productInput,
+      if (b2bHomeLayout != null) 'b2bHomeLayout': b2bHomeLayout, // 🟢 إرسال الحقل الجديد
     };
   }
 }
@@ -495,6 +500,7 @@ class ManagementFeaturesConfig {
   ScreenFeatureConfig? get products => configs['products'];
   ScreenFeatureConfig? get users => configs['users'];
   ScreenFeatureConfig? get offers => configs['offers'];
+  ScreenFeatureConfig? get orderPaths => configs['orderPaths'];
 }
 
 class ScreenFeatureConfig {

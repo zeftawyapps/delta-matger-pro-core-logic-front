@@ -19,7 +19,9 @@ class OrderSource {
     required double totalOrderPrice,
     String orderMode = 'C2B',
     String? workflowSlug,
+    String? senderOrganizationId,
     int calculationMode = 2,
+    Map<String, double>? additionalCalculation,
     Map<String, dynamic>? additionalData,
   }) async {
     try {
@@ -30,6 +32,7 @@ class OrderSource {
       String url = "${ApiUrls.BASE_URL}${EndPoints.ordersByOrg(organizationId)}";
       final queryParameters = {
         if (workflowSlug != null) "workflowSlug": workflowSlug,
+        if (senderOrganizationId != null) "senderOrganizationId": senderOrganizationId,
         "allowDefaultWorkflow": true,
         "calculationMode": calculationMode,
         "orderMode": orderMode,
@@ -39,6 +42,7 @@ class OrderSource {
         if (recipientDetails != null) "recipientDetails": recipientDetails,
         "totalOrderPrice": totalOrderPrice,
         "items": items,
+        if (additionalCalculation != null) "additionalCalculation": additionalCalculation,
         if (additionalData != null) ...additionalData,
       };
 

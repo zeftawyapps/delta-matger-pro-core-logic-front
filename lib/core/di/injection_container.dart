@@ -40,6 +40,10 @@ import 'package:matger_pro_core_logic/core/system/repo/system_repo.dart';
 import 'package:matger_pro_core_logic/features/workflow/source/workflow_source.dart';
 import 'package:matger_pro_core_logic/features/workflow/repo/workflow_repo.dart';
 
+// Order Path Imports
+import 'package:matger_pro_core_logic/features/order_path/source/order_path_source.dart';
+import 'package:matger_pro_core_logic/features/order_path/repo/order_path_repo.dart';
+
 final GetIt sl = GetIt.instance; // sl stands for Service Locator
 
 Future<void> initCoreLocator() async {
@@ -62,6 +66,7 @@ Future<void> initCoreLocator() async {
   sl.registerLazySingleton<LocationSource>(() => LocationSource());
   sl.registerLazySingleton<WorkflowSource>(() => WorkflowSource());
   sl.registerLazySingleton<SystemSource>(() => SystemSource());
+  sl.registerLazySingleton<OrderPathSource>(() => OrderPathSource());
 
   // ==========================================
   // 2. Repositories
@@ -93,6 +98,11 @@ Future<void> initCoreLocator() async {
     () => LocationRepo(locationSource: sl()),
   );
 
+  // Order Path Repo
+  sl.registerLazySingleton<OrderPathRepo>(
+    () => OrderPathRepo(source: sl()),
+  );
+
   // Roles & Users Sources
   sl.registerLazySingleton<RoleSource>(() => RoleSource());
   sl.registerLazySingleton<UserSource>(() => UserSource());
@@ -104,3 +114,4 @@ Future<void> initCoreLocator() async {
   // System Repo
   sl.registerLazySingleton<SystemRepo>(() => SystemRepo(systemSource: sl()));
 }
+

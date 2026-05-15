@@ -78,6 +78,15 @@ class EndPoints {
   static String shopOrders(String shopId) => "/orders/shop/$shopId";
   static String updateOrderStatus(String orderId) => "/orders/$orderId/status";
 
+  // Order Paths
+  static String orderPathsByOrg(String organizationId) =>
+      "/order-paths/$organizationId";
+  static String orderPathsOfOrg(String organizationId) =>
+      "/order-paths/organization/$organizationId";
+  static String orderPathById(String pathId) => "/order-paths/$pathId";
+  static String orderPathOrders(String pathId) =>
+      "/order-paths/$pathId/orders";
+
   // Workflow
   static String statusWorkflow(String entityType, String entryId) =>
       "/workflow/$entityType/$entryId/status";

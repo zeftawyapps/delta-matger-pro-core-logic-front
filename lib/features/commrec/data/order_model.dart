@@ -18,6 +18,7 @@ class OrderData {
   final String? handlerOrgId;
   final Map<String, double> additionalCalculation;
   final Map<String, dynamic> additionalData;
+  final Map<String, dynamic> externalReferences;
 
   OrderData({
     required this.id,
@@ -35,6 +36,7 @@ class OrderData {
     this.handlerOrgId,
     this.additionalCalculation = const {},
     this.additionalData = const {},
+    this.externalReferences = const {},
   });
 
   // Alias for backward compatibility
@@ -59,6 +61,7 @@ class OrderData {
       'workflowSlug',
       'handlerUserId',
       'handlerOrgId',
+      'externalReferences',
     ];
 
     final additional = Map<String, dynamic>.from(json)
@@ -92,6 +95,9 @@ class OrderData {
           ? (json['additionalCalculation'] as Map).map(
               (k, v) => MapEntry(k.toString(), TypeParser.parseDouble(v)))
           : const {},
+      externalReferences: json['externalReferences'] is Map
+          ? Map<String, dynamic>.from(json['externalReferences'])
+          : const {},
       additionalData: additional,
     );
   }
@@ -112,6 +118,8 @@ class OrderData {
       'handlerUserId': handlerUserId,
       'handlerOrgId': handlerOrgId,
       'additionalCalculation': additionalCalculation,
+      if (externalReferences.isNotEmpty)
+        'externalReferences': externalReferences,
       ...additionalData,
     };
   }

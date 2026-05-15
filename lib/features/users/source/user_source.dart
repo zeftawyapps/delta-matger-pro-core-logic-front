@@ -196,6 +196,7 @@ class UserSource {
     String? address,
     bool? isActive,
     List<String>? roles,
+    String? organizationId,
     Map<String, dynamic>? additionalFields,
   }) async {
     try {
@@ -214,6 +215,7 @@ class UserSource {
           if (address != null) 'address': address,
           if (isActive != null) 'isActive': isActive,
           if (roles != null) 'roles': roles,
+          if (organizationId != null) 'organizationId': organizationId,
           if (additionalFields != null) ...additionalFields,
         },
         cancelToken: CancelToken(),
@@ -227,6 +229,7 @@ class UserSource {
   /// تحديث ملف شخصي المستخدم الحالي (My Profile).
   Future<Result<RemoteBaseModel, dynamic>> updateMyProfile({
     String? username,
+    String? email,
     String? phone,
     String? address,
     String? bio,
@@ -246,6 +249,7 @@ class UserSource {
         url: url,
         body: {
           if (username != null) 'username': username,
+          if (email != null) 'email': email,
           if (phone != null) 'phone': phone,
           if (address != null) 'address': address,
           if (bio != null) 'bio': bio,

@@ -12,6 +12,9 @@ class UserDataDetailsModel {
   final DateTime? dateOfBirth;
   final String? bio;
   final String? avatarUrl;
+  final String? countryId;
+  final String? governorateId;
+  final String? cityId;
   final Map<String, dynamic> additionalInfo;
   final EntityMeta? meta;
 
@@ -26,6 +29,9 @@ class UserDataDetailsModel {
     this.dateOfBirth,
     this.bio,
     this.avatarUrl,
+    this.countryId,
+    this.governorateId,
+    this.cityId,
     this.additionalInfo = const {},
     this.meta,
   });
@@ -48,6 +54,9 @@ class UserDataDetailsModel {
       avatarUrl: json['avatarUrl'] != null
           ? ApiUrls.IMAGE_BASE_URL + json['avatarUrl'].toString()
           : null,
+      countryId: json['countryId'] as String?,
+      governorateId: json['governorateId'] as String?,
+      cityId: json['cityId'] as String?,
       additionalInfo: json['additionalInfo'] as Map<String, dynamic>? ?? {},
       meta: json['meta'] != null ? EntityMeta.fromJson(json['meta']) : null,
     );
@@ -65,6 +74,9 @@ class UserDataDetailsModel {
       'dateOfBirth': dateOfBirth?.toIso8601String(),
       'bio': bio,
       'avatarUrl': avatarUrl,
+      'countryId': countryId,
+      'governorateId': governorateId,
+      'cityId': cityId,
       'additionalInfo': additionalInfo,
       'meta': meta?.toJson(),
     };

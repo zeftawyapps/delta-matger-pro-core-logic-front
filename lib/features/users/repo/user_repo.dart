@@ -173,6 +173,30 @@ class UserRepo {
     return _parseSingle(result.data, 'getProfileById');
   }
 
+  /// جلب بيانات الملف الشخصي للمستخدم الحالي.
+  Future<RemoteBaseModel<UserProfileModel>> getMyProfile() async {
+    JDRepoConsole.info(
+      'Getting my profile in repo',
+      context: LogContext(module: 'UserRepo', method: 'getMyProfile'),
+    );
+    // نستخدم 'me' لجلب بيانات المستخدم الحالي من المسار /profiles/me
+    final result = await _userSource.getProfileById('me');
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        'Source error in getMyProfile: ${result.error?.message}',
+        context: LogContext(module: 'UserRepo', method: 'getMyProfile'),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+        data: null,
+      );
+    }
+
+    return _parseSingle(result.data, 'getMyProfile');
+  }
+
   // ─── Search ─────────────────────────────────────────────────────────────────
 
   /// البحث العام عن المستخدمين.
@@ -240,6 +264,10 @@ class UserRepo {
     String? address,
     bool? isActive,
     List<String>? roles,
+    String? organizationId,
+    String? countryId,
+    String? governorateId,
+    String? cityId,
     Map<String, dynamic>? additionalFields,
   }) async {
     JDRepoConsole.info(
@@ -254,7 +282,13 @@ class UserRepo {
       address: address,
       isActive: isActive,
       roles: roles,
-      additionalFields: additionalFields,
+      organizationId: organizationId,
+      additionalFields: {
+        if (countryId != null) 'countryId': countryId,
+        if (governorateId != null) 'governorateId': governorateId,
+        if (cityId != null) 'cityId': cityId,
+        if (additionalFields != null) ...additionalFields,
+      },
     );
 
     if (result.error != null) {
@@ -275,10 +309,14 @@ class UserRepo {
   /// تحديث ملف شخصي المستخدم الحالي (My Profile).
   Future<RemoteBaseModel<UserProfileModel>> updateMyProfile({
     String? username,
+    String? email,
     String? phone,
     String? address,
     String? bio,
     String? website,
+    String? countryId,
+    String? governorateId,
+    String? cityId,
     Map<String, dynamic>? socialLinks,
     Map<String, dynamic>? location,
     Map<String, dynamic>? additionalFields,
@@ -289,13 +327,19 @@ class UserRepo {
     );
     final result = await _userSource.updateMyProfile(
       username: username,
+      email: email,
       phone: phone,
       address: address,
       bio: bio,
       website: website,
       socialLinks: socialLinks,
       location: location,
-      additionalFields: additionalFields,
+      additionalFields: {
+        if (countryId != null) 'countryId': countryId,
+        if (governorateId != null) 'governorateId': governorateId,
+        if (cityId != null) 'cityId': cityId,
+        if (additionalFields != null) ...additionalFields,
+      },
     );
 
     if (result.error != null) {

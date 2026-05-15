@@ -17,6 +17,9 @@ class SystemFeatures {
   static const String screenCategories = 'screen.categories';
   static const String screenOffers = 'screen.offers';
   static const String screenPolicies = 'screen.policies';
+  static const String screenB2bHome = 'screen.b2bhome';
+  static const String orderPath = 'orderPaths';
+  static const String screenOrderPaths = 'screen.orderPaths';
   static const String product = 'product';
   static const String category = 'category';
   static const String order = 'order';
@@ -48,6 +51,9 @@ class SystemFeatures {
     offer: {'ar': 'العروض', 'en': 'Offers'},
     orgnizationownerData: {'ar': 'بيانات مالك المنظمة', 'en': 'Organization Owner Data'},
     screenPolicies: {'ar': 'سياسات المتجر', 'en': 'Store Policies'},
+    screenB2bHome: {'ar': 'منظومة البيع B2B (الوكلاء والتجار)', 'en': 'B2B Sales (Agents & Wholesalers)'},
+    orderPath: {'ar': 'مسارات الطلبات', 'en': 'Order Paths'},
+    screenOrderPaths: {'ar': 'شاشة مسارات الطلبات', 'en': 'Order Paths Screen'},
   };
 }
 
